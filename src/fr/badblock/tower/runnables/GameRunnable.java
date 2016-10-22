@@ -147,8 +147,8 @@ public class GameRunnable extends BukkitRunnable {
 				bp.clearInventory();
 				bp.setInvulnerable(true);
 
-				double badcoins = bp.inGameData(TowerData.class).getScore() / 10;
-				double xp	    = bp.inGameData(TowerData.class).getScore() / 5;
+				double badcoins = bp.inGameData(TowerData.class).getScore() / 4;
+				double xp	    = bp.inGameData(TowerData.class).getScore() / 2;
 
 				if(winner != null && winner.equals(bp.getTeam())){
 					bp.teleport(winnerLocation);

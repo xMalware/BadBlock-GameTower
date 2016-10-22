@@ -14,6 +14,7 @@ public class TowerData implements InGameData {
 	public long cooldown	= 0;
 	
 	public int getScore(){
-		return (kills * 20 + marks * 20) / (deaths == 0 ? 1 : (10 * deaths));
+		return (kills * 20 + marks * 20) / (deaths == 0 ? 1 : (deaths));
 	}
+	
 }
