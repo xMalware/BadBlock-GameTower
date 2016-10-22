@@ -132,7 +132,7 @@ public class PluginTower extends BadblockPlugin {
 			getAPI().setMapProtector(new TowerMapProtector());
 			getAPI().enableAntiSpawnKill();
 			
-			getAPI().getGameServer().whileRunningConnection(WhileRunningConnectionTypes.BACKUP);
+			getAPI().getGameServer().whileRunningConnection(WhileRunningConnectionTypes.SPECTATOR);
 			
 			new MoveListener();
 			new DeathListener();
