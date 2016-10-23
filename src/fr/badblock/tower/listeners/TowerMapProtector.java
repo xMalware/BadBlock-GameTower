@@ -28,6 +28,9 @@ public class TowerMapProtector implements MapProtector {
 	@Override
 	public boolean blockPlace(BadblockPlayer player, Block block) {
 		if(block != null && inGame()){
+			
+			if(block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST)
+				return player.hasAdminMode();
 
 			for(BadblockTeam team : GameAPI.getAPI().getTeams()){
 				if(team.teamData(TowerTeamData.class).getSpawnzone().isInSelection(block)){
@@ -120,7 +123,7 @@ public class TowerMapProtector implements MapProtector {
 
 	@Override
 	public boolean canInteractEntity(BadblockPlayer player, Entity entity) {
-		return true; // à priori rien à bloquer ... :o
+		return true; // ï¿½ priori rien ï¿½ bloquer ... :o
 	}
 
 	@Override

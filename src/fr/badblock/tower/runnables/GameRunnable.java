@@ -45,7 +45,7 @@ public class GameRunnable extends BukkitRunnable {
 		GameAPI.getAPI().getGameServer().saveTeamsAndPlayersForResult();
 
 		new ItemSpawnRunnable(Material.IRON_INGOT, 30, PluginTower.getInstance().getMapConfiguration().getIron()).start();
-		new ItemSpawnRunnable(Material.DIAMOND, 200, PluginTower.getInstance().getMapConfiguration().getIron()).start();
+		new ItemSpawnRunnable(Material.DIAMOND, 400, PluginTower.getInstance().getMapConfiguration().getIron()).start();
 		new ItemSpawnRunnable(Material.EXP_BOTTLE, 30, PluginTower.getInstance().getMapConfiguration().getXpbottle()).start();
 
 		Bukkit.getWorlds().forEach(world -> {
