@@ -13,7 +13,7 @@ import fr.badblock.tower.runnables.StartRunnable;
 
 public class GameCommand extends AbstractCommand {
 	public GameCommand() {
-		super("game", new TranslatableString("commands.gtower.usage"), GamePermission.BMODERATOR);
+		super("game", new TranslatableString("commands.gtower.usage"), GamePermission.BMODERATOR, GamePermission.BMODERATOR, GamePermission.BMODERATOR);
 		allowConsole(false);
 	}
 
