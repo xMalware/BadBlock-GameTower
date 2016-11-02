@@ -26,6 +26,7 @@ import fr.badblock.tower.configuration.TowerMapConfiguration;
 import fr.badblock.tower.listeners.DeathListener;
 import fr.badblock.tower.listeners.JoinListener;
 import fr.badblock.tower.listeners.MoveListener;
+import fr.badblock.tower.listeners.PartyJoinListener;
 import fr.badblock.tower.listeners.PlayerMountListener;
 import fr.badblock.tower.listeners.TowerMapProtector;
 import fr.badblock.tower.runnables.PreStartRunnable;
@@ -137,7 +138,8 @@ public class PluginTower extends BadblockPlugin {
 			new MoveListener();
 			new DeathListener();
 			new JoinListener();
-			new PlayerMountListener();		// GÃ¨re les moutons en dÃ©but de partie :3
+			new PartyJoinListener();
+			new PlayerMountListener();		// Gère les moutons en début de partie :3
 			
 			File votesFile = new File(getDataFolder(), VOTES_CONFIG);
 
