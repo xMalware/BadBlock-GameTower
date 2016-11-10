@@ -239,5 +239,10 @@ public class TowerMapProtector implements MapProtector {
 	public boolean destroyArrow() {
 		return true;
 	}
+	
+	@Override
+	public boolean canEntityBeingDamaged(Entity entity, BadblockPlayer badblockPlayer) {
+		return false;
+	}
 
 }
