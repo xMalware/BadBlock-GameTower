@@ -176,7 +176,7 @@ public class GameRunnable extends BukkitRunnable {
 
 					incrementAchievements(bp, TowerAchievementList.TOWER_WIN_1, TowerAchievementList.TOWER_WIN_2, TowerAchievementList.TOWER_WIN_3, TowerAchievementList.TOWER_WIN_4);
 				} else {
-					bp.getPlayerData().addRankedPoints(2);
+					bp.getPlayerData().addRankedPoints(-2);
 					badcoins = ((double) badcoins) / 1.5d;
 
 					bp.jailPlayerAt(looserLocation);
