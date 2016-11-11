@@ -151,6 +151,7 @@ public class GameRunnable extends BukkitRunnable {
 				double xp	    = bp.inGameData(TowerData.class).getScore() / 2;
 
 				if(winner != null && winner.equals(bp.getTeam())){
+					bp.getPlayerData().addRankedPoints(3);
 					bp.teleport(winnerLocation);
 					bp.setAllowFlight(true);
 					bp.setFlying(true);
@@ -175,6 +176,7 @@ public class GameRunnable extends BukkitRunnable {
 
 					incrementAchievements(bp, TowerAchievementList.TOWER_WIN_1, TowerAchievementList.TOWER_WIN_2, TowerAchievementList.TOWER_WIN_3, TowerAchievementList.TOWER_WIN_4);
 				} else {
+					bp.getPlayerData().addRankedPoints(2);
 					badcoins = ((double) badcoins) / 1.5d;
 
 					bp.jailPlayerAt(looserLocation);
