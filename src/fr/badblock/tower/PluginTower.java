@@ -17,6 +17,7 @@ import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.run.BadblockGame;
 import fr.badblock.gameapi.run.BadblockGameData;
 import fr.badblock.gameapi.run.RunType;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.GameRules;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.tower.commands.GameCommand;
@@ -108,6 +109,11 @@ public class PluginTower extends BadblockPlugin {
 			FileConfiguration teams 		= YamlConfiguration.loadConfiguration(teamsFile);
 
 			getAPI().registerTeams(configuration.maxPlayersInTeam, teams);
+			try {
+				BukkitUtils.setMaxPlayers(GameAPI.getAPI().getTeams().size() * configuration.maxPlayersInTeam);
+			} catch (ReflectiveOperationException e) {
+				e.printStackTrace();
+			}
 			getAPI().setDefaultKitContentManager(false);
 			
 			maxPlayers = getAPI().getTeams().size() * configuration.maxPlayersInTeam;
