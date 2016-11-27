@@ -19,16 +19,21 @@ public class TowerMapConfiguration {
 	private int				  dimension;
 	
 	/*
-	 * Pour empêcher les joueurs de sortir
+	 * Pour empÃªcher les joueurs de sortir
 	 */
 	private CuboidSelection   mapBounds;
 	
 	/*
-	 * Spawn pour les joueurs morts ou arrivant après le début
+	 * Spawn pour les joueurs morts ou arrivant aprÃ¨s le dÃ©but
 	 */
 	private Location 		  spawnLocation;
 	private Location		  iron;
 	private Location		  xpbottle;
+	
+	/**
+	 * La map est autorisÃ© en arcs
+	 */
+	private Boolean			  allowBows;
 	
 	private BadConfiguration  config;
 	

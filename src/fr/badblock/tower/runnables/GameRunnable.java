@@ -84,7 +84,10 @@ public class GameRunnable extends BukkitRunnable {
 				PlayerKit kit = p.inGameData(InGameKitData.class).getChoosedKit();
 
 				if(kit != null){
-					kit.giveKit(p);
+					if (PluginTower.getInstance().getMapConfiguration().getAllowBows())
+						kit.giveKit(p);
+					else
+						kit.giveKit(p, Material.BOW, Material.ARROW);
 				} else {
 					PluginTower.getInstance().giveDefaultKit(p);
 				}
