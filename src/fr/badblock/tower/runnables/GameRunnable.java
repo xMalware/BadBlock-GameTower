@@ -1,6 +1,7 @@
 package fr.badblock.tower.runnables;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -8,6 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.badblock.gameapi.GameAPI;
@@ -35,7 +37,7 @@ import lombok.Getter;
 public class GameRunnable extends BukkitRunnable {
 	public static final int MAX_TIME = 60 * 30;
 	public static boolean damage = false;
-	
+
 	public boolean forceEnd 		 = false;
 	@Getter
 	private int    time 			 = MAX_TIME;
@@ -47,6 +49,11 @@ public class GameRunnable extends BukkitRunnable {
 		new ItemSpawnRunnable(Material.IRON_INGOT, 60, PluginTower.getInstance().getMapConfiguration().getIron()).start();
 		new ItemSpawnRunnable(Material.DIAMOND, 800, PluginTower.getInstance().getMapConfiguration().getIron()).start();
 		new ItemSpawnRunnable(Material.EXP_BOTTLE, 30, PluginTower.getInstance().getMapConfiguration().getXpbottle()).start();
+
+		if (!PluginTower.getInstance().getMapConfiguration().getAllowBows()) {
+			remove(Material.BOW);
+			remove(Material.ARROW);
+		}
 
 		Bukkit.getWorlds().forEach(world -> {
 			world.setTime(config.getTime());
@@ -99,11 +106,24 @@ public class GameRunnable extends BukkitRunnable {
 		GameAPI.getAPI().getJoinItems().end();
 	}
 
+	public void remove(Material m) {
+		Iterator<Recipe> it = Bukkit.getServer().recipeIterator();
+		Recipe recipe;
+		while(it.hasNext())
+		{
+			recipe = it.next();
+			if (recipe != null && recipe.getResult().getType() == m)
+			{
+				it.remove();
+			}
+		}
+	}
+
 	@Override
 	public void run() {
 		if(time == MAX_TIME - 2){
 			damage = true;
-			
+
 			for(Player player : Bukkit.getOnlinePlayers()){
 				BadblockPlayer bp = (BadblockPlayer) player;
 				bp.pseudoJail(bp.getTeam().teamData(TowerTeamData.class).getRespawnLocation(), 300.0d);
@@ -122,7 +142,7 @@ public class GameRunnable extends BukkitRunnable {
 			if(obj != null)
 				obj.generate();
 		});
-		
+
 		for(BadblockTeam team : GameAPI.getAPI().getTeams()){
 			if(team.getOnlinePlayers().size() == 0){
 				GameAPI.getAPI().getGameServer().cancelReconnectionInvitations(team);
@@ -158,18 +178,18 @@ public class GameRunnable extends BukkitRunnable {
 					bp.teleport(winnerLocation);
 					bp.setAllowFlight(true);
 					bp.setFlying(true);
-					
+
 					new BukkitRunnable() {
 						int count = 5;
-						
+
 						@Override
 						public void run() {
 							count--;
-							
+
 							bp.teleport(winnerLocation);
 							bp.setAllowFlight(true);
 							bp.setFlying(true);
-							
+
 							if(count == 0)
 								cancel();
 						}
