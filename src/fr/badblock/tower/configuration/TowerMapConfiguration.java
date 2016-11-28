@@ -6,6 +6,7 @@ import org.bukkit.Location;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.configuration.BadConfiguration;
+import fr.badblock.gameapi.configuration.values.MapBoolean;
 import fr.badblock.gameapi.configuration.values.MapLocation;
 import fr.badblock.gameapi.configuration.values.MapNumber;
 import fr.badblock.gameapi.players.BadblockTeam;
@@ -46,6 +47,7 @@ public class TowerMapConfiguration {
 		spawnLocation   = config.getValue("spawnLocation", MapLocation.class, new MapLocation()).getHandle();
 		iron			= config.getValue("iron", MapLocation.class, new MapLocation()).getHandle();
 		xpbottle		= config.getValue("xpbottle", MapLocation.class, new MapLocation()).getHandle();
+		allowBows		= config.getValue("allowBows", MapBoolean.class, new MapBoolean(true)).getHandle();
 
 		
 		for(BadblockTeam team : GameAPI.getAPI().getTeams()){
