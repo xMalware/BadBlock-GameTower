@@ -68,6 +68,7 @@ public class GameRunnable extends BukkitRunnable {
 				p.changePlayerDimension(BukkitUtils.getEnvironment( config.getDimension() ));
 				p.teleport(location);
 				p.setGameMode(GameMode.SURVIVAL);
+				p.getCustomObjective().generate();
 
 				boolean good = true;
 
