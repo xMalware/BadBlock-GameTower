@@ -6,6 +6,7 @@ import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.scoreboard.BadblockScoreboardGenerator;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.tower.PluginTower;
 import fr.badblock.tower.entities.TowerTeamData;
 import fr.badblock.tower.runnables.StartRunnable;
 
@@ -39,6 +40,12 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		if(StartRunnable.gameTask != null){
 			objective.changeLine(i--,  i18n("tower.scoreboard.time-desc"));
 			objective.changeLine(i--,  i18n("tower.scoreboard.time", time(StartRunnable.gameTask.getTime()) ));
+		}
+		if (PluginTower.getInstance().getMapConfiguration() != null) {
+			i--;
+			if (PluginTower.getInstance().getMapConfiguration().getAllowBows())
+				objective.changeLine(i--,  i18n("rush.scoreboard.nobows"));
+			else objective.changeLine(i--,  i18n("rush.scoreboard.withbows"));
 		}
 		
 		objective.changeLine(i--, "");
