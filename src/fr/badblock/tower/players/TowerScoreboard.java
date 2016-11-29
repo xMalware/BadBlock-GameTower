@@ -42,7 +42,7 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 			objective.changeLine(i--,  i18n("tower.scoreboard.time", time(StartRunnable.gameTask.getTime()) ));
 		}
 		if (PluginTower.getInstance().getMapConfiguration() != null) {
-			i--;
+			objective.changeLine(i,  ""); i--;
 			if (!PluginTower.getInstance().getMapConfiguration().getAllowBows())
 				objective.changeLine(i--,  i18n("tower.scoreboard.nobows"));
 			else objective.changeLine(i--,  i18n("tower.scoreboard.withbows"));
