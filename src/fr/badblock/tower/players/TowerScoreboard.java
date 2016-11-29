@@ -44,8 +44,8 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		if (PluginTower.getInstance().getMapConfiguration() != null) {
 			i--;
 			if (PluginTower.getInstance().getMapConfiguration().getAllowBows())
-				objective.changeLine(i--,  i18n("rush.scoreboard.nobows"));
-			else objective.changeLine(i--,  i18n("rush.scoreboard.withbows"));
+				objective.changeLine(i--,  i18n("tower.scoreboard.nobows"));
+			else objective.changeLine(i--,  i18n("tower.scoreboard.withbows"));
 		}
 		
 		objective.changeLine(i--, "");
