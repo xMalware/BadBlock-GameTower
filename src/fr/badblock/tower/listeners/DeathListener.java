@@ -46,6 +46,8 @@ public class DeathListener extends BadListener {
 	
 	@EventHandler
 	public void onRespawn(PlayerFakeRespawnEvent e){
+		if (e.getPlayer().getOpenInventory() != null && e.getPlayer().getOpenInventory().getCursor() != null)
+			e.getPlayer().getOpenInventory().setCursor(null);
 		PluginTower.getInstance().giveDefaultKit(e.getPlayer());
 	}
 
