@@ -1,5 +1,8 @@
 package fr.badblock.tower.listeners;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -51,8 +54,17 @@ public class DeathListener extends BadListener {
 		PluginTower.getInstance().giveDefaultKit(e.getPlayer());
 	}
 
+	private Map<String, Long> lastDeath = new HashMap<>();
+	
 	private void death(FakeDeathEvent e, BadblockPlayer player, Entity killer, DamageCause last){
 		if(player.getTeam() == null) return; //WTF
+		if (lastDeath.containsKey(player.getName())) {
+			if (lastDeath.get(player.getName()) > System.currentTimeMillis()) {
+				e.setCancelled(true);
+				return;
+			}
+		}
+		lastDeath.put(player.getName(), System.currentTimeMillis() + 1000L);
 
 		if (player.getOpenInventory() != null && player.getOpenInventory().getCursor() != null)
 			player.getOpenInventory().setCursor(null);
