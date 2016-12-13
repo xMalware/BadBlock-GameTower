@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,17 +17,15 @@ import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
-import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
-import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
-import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.TimeUnit;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.tower.PluginTower;
 import fr.badblock.tower.TowerAchievementList;
 import fr.badblock.tower.configuration.TowerMapConfiguration;
 import fr.badblock.tower.entities.TowerTeamData;
+import fr.badblock.tower.listeners.JoinListener;
 import fr.badblock.tower.players.TowerData;
 import fr.badblock.tower.players.TowerScoreboard;
 import fr.badblock.tower.result.TowerResults;
@@ -65,40 +62,7 @@ public class GameRunnable extends BukkitRunnable {
 			location.getChunk().load();
 
 			for(BadblockPlayer p : team.getOnlinePlayers()){
-				p.changePlayerDimension(BukkitUtils.getEnvironment( config.getDimension() ));
-				p.teleport(location);
-				p.setGameMode(GameMode.SURVIVAL);
-				p.getCustomObjective().generate();
-
-				boolean good = true;
-
-				for(PlayerKit toUnlock : PluginTower.getInstance().getKits().values()){
-					if(!toUnlock.isVIP()){
-						if(p.getPlayerData().getUnlockedKitLevel(toUnlock) < 2){
-							good = false; break;
-						}
-					}
-				}
-
-				if(good){
-					PlayerAchievementState state = p.getPlayerData().getAchievementState(TowerAchievementList.TOWER_ALLKITS);
-
-					if(!state.isSucceeds()){
-						state.succeed();
-						TowerAchievementList.TOWER_ALLKITS.reward(p);
-					}
-				}
-
-				PlayerKit kit = p.inGameData(InGameKitData.class).getChoosedKit();
-
-				if(kit != null){
-					if (PluginTower.getInstance().getMapConfiguration().getAllowBows())
-						kit.giveKit(p);
-					else
-						kit.giveKit(p, Material.BOW, Material.ARROW);
-				} else {
-					PluginTower.getInstance().giveDefaultKit(p);
-				}
+				JoinListener.handle(p);
 			}
 
 		}
