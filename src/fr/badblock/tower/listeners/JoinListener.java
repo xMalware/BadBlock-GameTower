@@ -63,7 +63,7 @@ public class JoinListener extends BadListener {
 	
 	@EventHandler
 	public void onPlayerGameInit(PlayerGameInitEvent event) {
-		
+		handle(event.getPlayer());
 	}
 
 	@EventHandler
