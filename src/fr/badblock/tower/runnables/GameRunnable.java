@@ -121,7 +121,7 @@ public class GameRunnable extends BukkitRunnable {
 
 		to.forEach(GameAPI.getAPI()::unregisterTeam);
 
-		if(size == 1 || forceEnd || (max != null && max.teamData(TowerTeamData.class).getMarks() == PluginTower.getInstance().getConfiguration().neededPoints)){
+		if(GameAPI.getAPI().getTeams().stream().filter(team -> team.playersCurrentlyOnline() > 0).count() <= 1 || forceEnd || (max != null && max.teamData(TowerTeamData.class).getMarks() == PluginTower.getInstance().getConfiguration().neededPoints)){
 			cancel();
 			BadblockTeam winner = max;
 
