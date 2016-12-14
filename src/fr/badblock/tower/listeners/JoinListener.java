@@ -16,6 +16,7 @@ import fr.badblock.gameapi.events.PlayerGameInitEvent;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.kits.PlayerKit;
@@ -50,17 +51,19 @@ public class JoinListener extends BadListener {
 
 		new BossBarRunnable(player.getUniqueId()).runTaskTimer(GameAPI.getAPI(), 0, 20L);
 
-		player.setGameMode(GameMode.SURVIVAL);
-		player.sendTranslatedTitle("tower.join.title");
-		player.teleport(PluginTower.getInstance().getConfiguration().spawn.getHandle());
-		player.sendTimings(0, 80, 20);
-		player.sendTranslatedTabHeader(new TranslatableString("tower.tab.header"), new TranslatableString("tower.tab.footer"));
+		if (!player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
+			player.setGameMode(GameMode.SURVIVAL);
+			player.sendTranslatedTitle("tower.join.title");
+			player.teleport(PluginTower.getInstance().getConfiguration().spawn.getHandle());
+			player.sendTimings(0, 80, 20);
+			player.sendTranslatedTabHeader(new TranslatableString("tower.tab.header"), new TranslatableString("tower.tab.footer"));
 
-		GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
+			GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
+		}
 		PreStartRunnable.doJob();
 		StartRunnable.joinNotify(Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers());
 	}
-	
+
 	@EventHandler
 	public void onPlayerGameInit(PlayerGameInitEvent event) {
 		handle(event.getPlayer());

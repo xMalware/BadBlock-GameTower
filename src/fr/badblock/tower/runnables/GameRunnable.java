@@ -125,7 +125,7 @@ public class GameRunnable extends BukkitRunnable {
 			BadblockTeam winner = max;
 
 			GameAPI.getAPI().getGameServer().setGameState(GameState.FINISHED);
-
+			
 			Location winnerLocation = PluginTower.getInstance().getMapConfiguration().getSpawnLocation();
 			Location looserLocation = winnerLocation.clone().add(0d, 7d, 0d);
 
