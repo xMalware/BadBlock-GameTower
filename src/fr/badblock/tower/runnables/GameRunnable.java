@@ -86,6 +86,7 @@ public class GameRunnable extends BukkitRunnable {
 
 	@Override
 	public void run() {
+		GameAPI.setJoinable(time > MAX_TIME / 2);
 		if(time == MAX_TIME - 2){
 			damage = true;
 
