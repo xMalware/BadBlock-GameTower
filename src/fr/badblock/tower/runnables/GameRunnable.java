@@ -174,6 +174,7 @@ public class GameRunnable extends BukkitRunnable {
 					if(bp.getBadblockMode() == BadblockMode.PLAYER)
 						bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.LOOSES);
 				}
+				bp.sendTranslatedMessage("game.waitforbeingteleportedinanothergame", Bukkit.getServerName().split("_")[0]);
 
 				if(badcoins > 20)
 					badcoins = 20;
