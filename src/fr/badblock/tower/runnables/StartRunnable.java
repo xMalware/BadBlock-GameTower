@@ -23,10 +23,11 @@ public class StartRunnable extends BukkitRunnable {
 	public static     	StartRunnable task 		        = null;
 	public static    	GameRunnable  gameTask		    = null;
 
-	private int time;
+	public static int time	= TIME_BEFORE_START;
 	
 	@Override
 	public void run() {
+		GameAPI.setJoinable(time > 10);
 		if(time == 0){
 			for(Player player : Bukkit.getOnlinePlayers()){
 				BadblockPlayer bPlayer = (BadblockPlayer) player;
@@ -111,7 +112,7 @@ public class StartRunnable extends BukkitRunnable {
 	
 	public static void startGame(){
 		if(task == null){
-			task = new StartRunnable(TIME_BEFORE_START);
+			task = new StartRunnable();
 			task.start();
 		}
 	}
