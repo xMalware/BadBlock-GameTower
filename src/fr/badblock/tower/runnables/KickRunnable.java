@@ -26,7 +26,7 @@ public class KickRunnable extends BukkitRunnable {
 		} else  if (time == 10) {
 			Gson gson = GameAPI.getGson();
 			for(BadblockPlayer player : BukkitUtils.getPlayers()){
-				GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), Bukkit.getServerName().split("_")[0], false)), 5000, false);
+				GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), Bukkit.getServerName().split("_")[0], true)), 5000, false);
 			}
 		}else if(time == -3){
 			Bukkit.shutdown();
