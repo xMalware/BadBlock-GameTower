@@ -19,6 +19,7 @@ import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.TimeUnit;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.tower.PluginTower;
@@ -174,8 +175,6 @@ public class GameRunnable extends BukkitRunnable {
 					if(bp.getBadblockMode() == BadblockMode.PLAYER)
 						bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.LOOSES);
 				}
-				bp.sendTranslatedMessage("game.waitforbeingteleportedinanothergame", Bukkit.getServerName().split("_")[0]);
-
 				if(badcoins > 20)
 					badcoins = 20;
 				if(xp > 50)
@@ -203,6 +202,7 @@ public class GameRunnable extends BukkitRunnable {
 			}
 
 			new TowerResults(TimeUnit.SECOND.toShort(time, TimeUnit.SECOND, TimeUnit.HOUR), winner);
+			BukkitUtils.getPlayers().forEach(bp -> bp.sendTranslatedMessage("game.waitforbeingteleportedinanothergame", Bukkit.getServerName().split("_")[0]));
 			new EndEffectRunnable(winnerLocation, winner).runTaskTimer(GameAPI.getAPI(), 0, 1L);
 			new KickRunnable().runTaskTimer(GameAPI.getAPI(), 0, 20L);
 
