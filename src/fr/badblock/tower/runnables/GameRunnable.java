@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,9 +17,7 @@ import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
-import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
-import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.TimeUnit;
@@ -29,6 +26,7 @@ import fr.badblock.tower.PluginTower;
 import fr.badblock.tower.TowerAchievementList;
 import fr.badblock.tower.configuration.TowerMapConfiguration;
 import fr.badblock.tower.entities.TowerTeamData;
+import fr.badblock.tower.listeners.JoinListener;
 import fr.badblock.tower.players.TowerData;
 import fr.badblock.tower.players.TowerScoreboard;
 import fr.badblock.tower.result.TowerResults;
@@ -65,40 +63,7 @@ public class GameRunnable extends BukkitRunnable {
 			location.getChunk().load();
 
 			for(BadblockPlayer p : team.getOnlinePlayers()){
-				p.changePlayerDimension(BukkitUtils.getEnvironment( config.getDimension() ));
-				p.teleport(location);
-				p.setGameMode(GameMode.SURVIVAL);
-				p.getCustomObjective().generate();
-
-				boolean good = true;
-
-				for(PlayerKit toUnlock : PluginTower.getInstance().getKits().values()){
-					if(!toUnlock.isVIP()){
-						if(p.getPlayerData().getUnlockedKitLevel(toUnlock) < 2){
-							good = false; break;
-						}
-					}
-				}
-
-				if(good){
-					PlayerAchievementState state = p.getPlayerData().getAchievementState(TowerAchievementList.TOWER_ALLKITS);
-
-					if(!state.isSucceeds()){
-						state.succeed();
-						TowerAchievementList.TOWER_ALLKITS.reward(p);
-					}
-				}
-
-				PlayerKit kit = p.inGameData(InGameKitData.class).getChoosedKit();
-
-				if(kit != null){
-					if (PluginTower.getInstance().getMapConfiguration().getAllowBows())
-						kit.giveKit(p);
-					else
-						kit.giveKit(p, Material.BOW, Material.ARROW);
-				} else {
-					PluginTower.getInstance().giveDefaultKit(p);
-				}
+				JoinListener.handle(p);
 			}
 
 		}
@@ -122,6 +87,7 @@ public class GameRunnable extends BukkitRunnable {
 
 	@Override
 	public void run() {
+		GameAPI.setJoinable(time > MAX_TIME / 2);
 		if(time == MAX_TIME - 2){
 			damage = true;
 
@@ -156,12 +122,12 @@ public class GameRunnable extends BukkitRunnable {
 
 		to.forEach(GameAPI.getAPI()::unregisterTeam);
 
-		if(size == 1 || forceEnd || (max != null && max.teamData(TowerTeamData.class).getMarks() == PluginTower.getInstance().getConfiguration().neededPoints)){
+		if(GameAPI.getAPI().getTeams().stream().filter(team -> team.playersCurrentlyOnline() > 0).count() <= 1 || forceEnd || (max != null && max.teamData(TowerTeamData.class).getMarks() == PluginTower.getInstance().getConfiguration().neededPoints)){
 			cancel();
 			BadblockTeam winner = max;
 
 			GameAPI.getAPI().getGameServer().setGameState(GameState.FINISHED);
-
+			
 			Location winnerLocation = PluginTower.getInstance().getMapConfiguration().getSpawnLocation();
 			Location looserLocation = winnerLocation.clone().add(0d, 7d, 0d);
 
@@ -209,7 +175,6 @@ public class GameRunnable extends BukkitRunnable {
 					if(bp.getBadblockMode() == BadblockMode.PLAYER)
 						bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.LOOSES);
 				}
-
 				if(badcoins > 20)
 					badcoins = 20;
 				if(xp > 50)
@@ -237,6 +202,7 @@ public class GameRunnable extends BukkitRunnable {
 			}
 
 			new TowerResults(TimeUnit.SECOND.toShort(time, TimeUnit.SECOND, TimeUnit.HOUR), winner);
+			BukkitUtils.getPlayers().forEach(bp -> bp.sendTranslatedMessage("game.waitforbeingteleportedinanothergame", Bukkit.getServerName().split("_")[0]));
 			new EndEffectRunnable(winnerLocation, winner).runTaskTimer(GameAPI.getAPI(), 0, 1L);
 			new KickRunnable().runTaskTimer(GameAPI.getAPI(), 0, 20L);
 
