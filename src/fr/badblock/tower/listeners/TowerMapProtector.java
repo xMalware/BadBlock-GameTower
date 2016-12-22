@@ -45,6 +45,8 @@ public class TowerMapProtector implements MapProtector {
 
 	@Override
 	public boolean blockBreak(BadblockPlayer player, Block block) {
+		if (player.hasAdminMode()) return true;
+		if (block != null && block.getType() != null && (block.getType().equals(Material.CHEST) || block.getType().equals(Material.TRAPPED_CHEST) || block.getType().equals(Material.ENDER_CHEST))) return false;
 		if(inGame() && block != null){
 
 			for(BadblockTeam team : GameAPI.getAPI().getTeams()){
