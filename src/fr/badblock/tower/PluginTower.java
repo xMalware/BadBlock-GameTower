@@ -129,7 +129,6 @@ public class PluginTower extends BadblockPlugin {
 			getAPI().getBadblockScoreboard().doOnDamageHologram();
 
 			getAPI().formatChat(true, true);
-			
 			getAPI().getJoinItems().registerKitItem(0, kits, new File(getDataFolder(), KITS_CONFIG_INVENTORY));
 			getAPI().getJoinItems().registerTeamItem(3, new File(getDataFolder(), TEAMS_CONFIG_INVENTORY));
 			getAPI().getJoinItems().registerAchievementsItem(4, BadblockGame.TOWER);
