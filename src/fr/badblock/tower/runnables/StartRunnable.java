@@ -106,9 +106,8 @@ public class StartRunnable extends BukkitRunnable {
 
 	public static void joinNotify(int currentPlayers, int maxPlayers){
 		if (task != null) {
-			boolean ok = time >= 10;
 			int a = time - (TIME_BEFORE_START / Bukkit.getMaxPlayers());
-			if ((a <= 10 && ok) || a < 0) time = 10;
+			if ((a < time && time <= 10) || (a < 10 && time >= 10)) time = 10;
 			else time = a;
 		}
 		if(currentPlayers < PluginTower.getInstance().getConfiguration().minPlayers) return;
