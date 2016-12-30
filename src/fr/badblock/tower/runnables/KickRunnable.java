@@ -20,7 +20,7 @@ public class KickRunnable extends BukkitRunnable {
 				player.sendPlayer(PluginTower.getInstance().getConfiguration().fallbackServer);
 			}
 
-		}
+		} 
 
 		time--;
 	}
