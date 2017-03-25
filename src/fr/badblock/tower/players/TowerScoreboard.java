@@ -29,6 +29,7 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		objective.setGenerator(this);
 
 		objective.generate();
+		doBadblockFooter(objective);
 	}
 	
 	@Override
