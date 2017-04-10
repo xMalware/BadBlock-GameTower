@@ -1,5 +1,5 @@
 name: BadblockTower
-main: fr.badblock.tower.PluginTower
+main: fr.badblock.bukkit.games.tower.PluginTower
 version: 2.0
 depends: ['BadblockGameAPI']
 authors: ['LeLanN']
