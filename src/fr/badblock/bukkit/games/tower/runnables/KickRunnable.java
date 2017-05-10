@@ -16,7 +16,7 @@ public class KickRunnable extends BukkitRunnable {
 			Bukkit.shutdown();
 		}else if(time <= 5){
 
-			for(BadblockPlayer player : BukkitUtils.getPlayers()){
+			for(BadblockPlayer player : BukkitUtils.getAllPlayers()){
 				player.sendPlayer(PluginTower.getInstance().getConfiguration().fallbackServer);
 			}
 
