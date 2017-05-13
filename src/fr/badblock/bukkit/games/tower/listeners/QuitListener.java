@@ -19,7 +19,11 @@ public class QuitListener extends BadListener {
 		
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 		BadblockTeam   team   = player.getTeam();
-		
+
+		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() < PluginTower.getInstance().getConfiguration().minPlayers) {
+			StartRunnable.stopGame();
+			StartRunnable.time = 60;
+		}
 		if(team == null) return;
 		
 		if(team.getOnlinePlayers().size() == 0){
@@ -27,10 +31,6 @@ public class QuitListener extends BadListener {
 			GameAPI.getAPI().unregisterTeam(team);
 			
 			new TranslatableString("tower.team-loose", team.getChatName()).broadcast();
-		}
-		if (BukkitUtils.getPlayers().size() < PluginTower.getInstance().getConfiguration().minPlayers) {
-			StartRunnable.stopGame();
-			StartRunnable.time = 60;
 		}
 	}
 }
