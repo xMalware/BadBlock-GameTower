@@ -107,15 +107,15 @@ public class StartRunnable extends BukkitRunnable {
 	public static void joinNotify(int currentPlayers, int maxPlayers){
 		if (task != null) {
 			int a = time - (TIME_BEFORE_START / Bukkit.getMaxPlayers());
-			if ((a < time && time <= 60) || ((a < 60 || Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers()) && time >= 60)) time = 60;
-			else time = a;
+			if (time >= 60 && (a <= 60 || Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers())) time = 60;
+			else if (time <= 60) time = a;
 		}
 		if(currentPlayers < PluginTower.getInstance().getConfiguration().minPlayers) return;
 		
 		startGame();
 		int a = time - (TIME_BEFORE_START / Bukkit.getMaxPlayers());
-		if ((a < time && time <= 60) || ((a < 60 || Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers()) && time >= 60)) time = 60;
-		else time = a;
+		if (time >= 60 && (a <= 60 || Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers())) time = 60;
+		else if (time <= 60) time = a;
 	}
 	
 	public static void startGame(){

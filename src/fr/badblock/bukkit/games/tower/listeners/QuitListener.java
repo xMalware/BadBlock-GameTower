@@ -15,7 +15,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class QuitListener extends BadListener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e){
-		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() < PluginTower.getInstance().getConfiguration().minPlayers) {
+		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() - 1 < PluginTower.getInstance().getConfiguration().minPlayers) {
 			StartRunnable.stopGame();
 			StartRunnable.time = 60;
 		}
