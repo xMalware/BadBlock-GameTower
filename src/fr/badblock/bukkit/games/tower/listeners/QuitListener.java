@@ -15,15 +15,15 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class QuitListener extends BadListener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e){
+		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() < PluginTower.getInstance().getConfiguration().minPlayers) {
+			StartRunnable.stopGame();
+			StartRunnable.time = 60;
+		}
 		if(!inGame()) return;
 		
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 		BadblockTeam   team   = player.getTeam();
 
-		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() < PluginTower.getInstance().getConfiguration().minPlayers) {
-			StartRunnable.stopGame();
-			StartRunnable.time = 60;
-		}
 		if(team == null) return;
 		
 		if(team.getOnlinePlayers().size() == 0){
