@@ -120,6 +120,7 @@ public class StartRunnable extends BukkitRunnable {
 	
 	public static void startGame(){
 		if(task == null){
+			time = TIME_BEFORE_START;
 			task = new StartRunnable();
 			task.start();
 		}
