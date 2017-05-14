@@ -108,11 +108,9 @@ public class StartRunnable extends BukkitRunnable {
 		if(currentPlayers < PluginTower.getInstance().getConfiguration().minPlayers) return;
 		
 		startGame();
-		if (task != null) {
 			int a = time - (TIME_BEFORE_START / Bukkit.getMaxPlayers());
 			if (time >= 60 && (a <= 60 || Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers())) time = 60;
 			else if (time >= 60) time = a;
-		}
 	}
 	
 	public static void startGame(){
