@@ -126,7 +126,7 @@ public class StartRunnable extends BukkitRunnable {
 			time = TIME_BEFORE_START;
 		} else if(task != null){
 			task.cancel();
-			time = TIME_BEFORE_START;
+			time = time > 60 ? time : 60;
 			GameAPI.setJoinable(true);
 		}
 		
