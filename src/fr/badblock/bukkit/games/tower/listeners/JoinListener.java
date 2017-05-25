@@ -69,6 +69,11 @@ public class JoinListener extends BadListener {
 				if (tower.getMaxPlayers() < max) {
 					tower.getAPI().getTeams().forEach(team -> team.setMaxPlayers(team.getMaxPlayers() + 1));
 					tower.setMaxPlayers(tower.getMaxPlayers() + tower.getAPI().getTeams().size());
+					try {
+						BukkitUtils.setMaxPlayers(tower.getMaxPlayers());
+					} catch (Exception err) {
+						err.printStackTrace();
+					}
 				}
 			}
 		}
