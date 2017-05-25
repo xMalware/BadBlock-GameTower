@@ -175,4 +175,10 @@ public class PluginTower extends BadblockPlugin {
 		File configFile = new File(getDataFolder(), CONFIG);
 		JsonUtils.save(configFile, configuration, true);
 	}
+	
+	public int getMinPlayers() {
+		if (!configuration.enabledAutoTeamManager) return configuration.minPlayers;
+		return configuration.minPlayersAutoTeam * getAPI().getTeams().size();
+	}
+	
 }
