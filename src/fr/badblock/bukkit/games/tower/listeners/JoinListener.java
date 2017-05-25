@@ -43,16 +43,7 @@ public class JoinListener extends BadListener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
-	}
-	
-	@EventHandler
-	public void onLogin(PlayerLoginEvent e){
-
-		if(inGame()){
-			return;
-		}
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-
 		new BossBarRunnable(player.getUniqueId()).runTaskTimer(GameAPI.getAPI(), 0, 20L);
 
 		if (!player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
@@ -64,6 +55,15 @@ public class JoinListener extends BadListener {
 
 			GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
 		}
+	}
+	
+	@EventHandler
+	public void onLogin(PlayerLoginEvent e){
+
+		if(inGame()){
+			return;
+		}
+
 		PreStartRunnable.doJob();
 		StartRunnable.joinNotify(Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers());
 		PluginTower tower = PluginTower.getInstance();
