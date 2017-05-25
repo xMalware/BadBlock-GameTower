@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,8 +23,8 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.PlayerGameInitEvent;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
+import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.kits.PlayerKit;
@@ -40,13 +41,16 @@ public class JoinListener extends BadListener {
 	}
 
 	@EventHandler
-	public void onJoin(PlayerJoinEvent e){
+	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
+	}
+	
+	@EventHandler
+	public void onLogin(PlayerLoginEvent e){
 
 		if(inGame()){
 			return;
 		}
-
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
 		new BossBarRunnable(player.getUniqueId()).runTaskTimer(GameAPI.getAPI(), 0, 20L);
@@ -77,6 +81,7 @@ public class JoinListener extends BadListener {
 				}
 			}
 		}
+		System.out.println("OnLogin: Tower");
 	}
 
 	@EventHandler
