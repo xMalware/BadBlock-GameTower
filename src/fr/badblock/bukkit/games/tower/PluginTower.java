@@ -2,6 +2,7 @@ package fr.badblock.bukkit.games.tower;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -53,6 +54,9 @@ public class PluginTower extends BadblockPlugin {
 	private TowerConfiguration    configuration;
 	@Getter@Setter
 	private TowerMapConfiguration mapConfiguration;
+	
+	@Getter
+	public HashMap<String, Boolean> bow = new HashMap<>();
 	
 	@Getter
 	private Map<String, PlayerKit> kits;
@@ -130,6 +134,60 @@ public class PluginTower extends BadblockPlugin {
 			getAPI().getBadblockScoreboard().doOnDamageHologram();
 
 			getAPI().formatChat(true, true);
+			//ItemStackFactory item = GameAPI.getAPI().createItemStackFactory().displayName(new TranslatableString("vote.bowinventory")).type(Material.BOW);
+			/*getAPI().getJoinItems().registerCustomItem(1, item, new ItemEvent() {
+
+				@Override
+				public boolean call(ItemAction action, BadblockPlayer player) {
+					CustomInventory inventory = GameAPI.getAPI().createCustomInventory(kits.size() / 9, GameAPI.i18n().get(player, "vote.bowinventory")[0]);
+					int yes = 0;
+					int no = 0;
+					for (boolean bool : bow.values())
+						if (bool) yes++;
+						else no++;
+					inventory.addClickableItem(0, GameAPI.getAPI().createItemStackFactory()
+					.type(Material.BOW)
+					.displayName(GameAPI.getAPI().getI18n().get(player.getPlayerData().getLocale(), "vote.bowyes")[0])
+					.lore(new TranslatableString("vote.bowvotes", yes))
+					.asExtra(1).listenAs(new ItemEvent(){
+						@Override
+						public boolean call(ItemAction action, BadblockPlayer player) {
+							if (bow.containsKey(player.getName())) {
+								boolean bool = bow.get(player.getName());
+								if (bool) {
+									player.sendTranslatedMessage("vote.bowalready");
+									return true;
+								}
+							}
+							bow.put(player.getName(), true);
+							player.sendTranslatedMessage("vote.bowvoted", player.getTranslatedMessage("vote.bowvotedyes")[0]);
+							return true;
+						}
+					}, ItemPlaces.INVENTORY_CLICKABLE));
+					inventory.addClickableItem(1, GameAPI.getAPI().createItemStackFactory()
+					.type(Material.BOW)
+					.displayName(GameAPI.getAPI().getI18n().get(player.getPlayerData().getLocale(), "vote.bowno")[0])
+					.lore(new TranslatableString("vote.bowvotes", no))
+					.asExtra(1).listenAs(new ItemEvent(){
+						@Override
+						public boolean call(ItemAction action, BadblockPlayer player) {
+							if (bow.containsKey(player.getName())) {
+								boolean bool = bow.get(player.getName());
+								if (!bool) {
+									player.sendTranslatedMessage("vote.bowalready");
+									return true;
+								}
+							}
+							bow.put(player.getName(), false);
+							player.sendTranslatedMessage("vote.bowvoted", player.getTranslatedMessage("vote.bowvotedno")[0]);
+							return true;
+						}
+					}, ItemPlaces.INVENTORY_CLICKABLE));
+					inventory.openInventory(player);
+					return true;
+				}
+				
+			});*/
 			getAPI().getJoinItems().registerKitItem(0, kits, new File(getDataFolder(), KITS_CONFIG_INVENTORY));
 			getAPI().getJoinItems().registerTeamItem(3, new File(getDataFolder(), TEAMS_CONFIG_INVENTORY));
 			getAPI().getJoinItems().registerAchievementsItem(4, BadblockGame.TOWER);

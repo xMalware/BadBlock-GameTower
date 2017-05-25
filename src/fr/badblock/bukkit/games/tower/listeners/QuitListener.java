@@ -18,7 +18,7 @@ public class QuitListener extends BadListener {
 		PluginTower tower = PluginTower.getInstance();
 		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() - 1 < tower.getConfiguration().minPlayers) {
 			StartRunnable.stopGame();
-			StartRunnable.time = StartRunnable.time > 60 ? StartRunnable.time : 60;
+			StartRunnable.time = StartRunnable.time > 30 ? StartRunnable.time : 30;
 		}
 		if(!inGame()) return;
 		

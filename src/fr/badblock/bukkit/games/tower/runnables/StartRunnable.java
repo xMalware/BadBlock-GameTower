@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class StartRunnable extends BukkitRunnable {
-	public static final int 		  TIME_BEFORE_START = 300;
+	public static final int 		  TIME_BEFORE_START = 60;
 	public static     	StartRunnable task 		        = null;
 	public static    	GameRunnable  gameTask		    = null;
 
@@ -109,8 +109,8 @@ public class StartRunnable extends BukkitRunnable {
 		
 		startGame();
 			int a = time - (TIME_BEFORE_START / Bukkit.getMaxPlayers());
-			if (time >= 60 && (a <= 60 || Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers())) time = 60;
-			else if (time >= 60) time = a;
+			if (time >= 30 && (a <= 30 || Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers())) time = 30;
+			else if (time >= 30) time = a;
 	}
 	
 	public static void startGame(){
