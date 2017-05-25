@@ -15,9 +15,21 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class QuitListener extends BadListener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e){
-		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() - 1 < PluginTower.getInstance().getConfiguration().minPlayers) {
+		PluginTower tower = PluginTower.getInstance();
+		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() - 1 < tower.getConfiguration().minPlayers) {
 			StartRunnable.stopGame();
 			StartRunnable.time = StartRunnable.time > 60 ? StartRunnable.time : 60;
+		}
+		if (BukkitUtils.getPlayers().size() - 1 < tower.getMaxPlayers() - tower.getAPI().getTeams().size()) {			
+			if (tower.getConfiguration().enabledAutoTeamManager) {
+				tower.getAPI().getTeams().forEach(team -> team.setMaxPlayers(team.getMaxPlayers() - 1));
+				tower.setMaxPlayers(tower.getMaxPlayers() - tower.getAPI().getTeams().size());
+				try {
+					BukkitUtils.setMaxPlayers(tower.getMaxPlayers());
+				} catch (Exception err) {
+					err.printStackTrace();
+				}
+			}
 		}
 		if(!inGame()) return;
 		
