@@ -67,7 +67,7 @@ public class JoinListener extends BadListener {
 		PreStartRunnable.doJob();
 		StartRunnable.joinNotify(Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers());
 		PluginTower tower = PluginTower.getInstance();
-		if (Bukkit.getOnlinePlayers().size() >= tower.getMaxPlayers()) {
+		if (Bukkit.getOnlinePlayers().size() + 1 >= tower.getMaxPlayers()) {
 			if (tower.getConfiguration().enabledAutoTeamManager) {
 				int max = tower.getConfiguration().maxPlayersAutoTeam * tower.getAPI().getTeams().size();
 				if (tower.getMaxPlayers() < max) {
