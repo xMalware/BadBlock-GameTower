@@ -91,5 +91,6 @@ public class TowerTeamData implements TeamData {
 			state.progress(1.0d);
 			state.trySucceed(player, achievement);
 		}
+		player.saveGameData();
 	}
 }

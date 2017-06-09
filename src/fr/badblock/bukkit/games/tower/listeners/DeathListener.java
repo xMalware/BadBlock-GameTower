@@ -101,5 +101,6 @@ public class DeathListener extends BadListener {
 			state.progress(1.0d);
 			state.trySucceed(player, achievement);
 		}
+		player.saveGameData();
 	}
 }
