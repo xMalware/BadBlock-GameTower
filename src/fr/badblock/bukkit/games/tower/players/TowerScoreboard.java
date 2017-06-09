@@ -41,6 +41,8 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		if(StartRunnable.gameTask != null){
 			objective.changeLine(i--,  i18n("tower.scoreboard.time-desc"));
 			objective.changeLine(i--,  i18n("tower.scoreboard.time", time(StartRunnable.gameTask.getTime()) ));
+			
+			//objective.changeLine(i--,  i18n("tower.scoreboard.position", time(StartRunnable.gameTask.getTime()) ));
 		}
 		if (PluginTower.getInstance().getMapConfiguration() != null) {
 			objective.changeLine(i,  ""); i--;

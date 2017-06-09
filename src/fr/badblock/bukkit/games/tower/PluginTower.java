@@ -196,6 +196,7 @@ public class PluginTower extends BadblockPlugin {
 			
 			getAPI().setMapProtector(new TowerMapProtector());
 			getAPI().enableAntiSpawnKill();
+			//getAPI().enableAntiBowSpam(500);
 			
 			getAPI().getGameServer().whileRunningConnection(WhileRunningConnectionTypes.SPECTATOR);
 			
