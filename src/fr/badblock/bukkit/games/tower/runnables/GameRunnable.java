@@ -32,12 +32,12 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import lombok.Getter;
 
 public class GameRunnable extends BukkitRunnable {
-	public static final int MAX_TIME = 60 * 30;
+	//public static final int MAX_TIME = 60 * 60 * 24;
 	public static boolean damage = false;
 
 	public boolean forceEnd 		 = false;
 	@Getter
-	private int    time 			 = MAX_TIME;
+	private int    time 			 = 0;
 
 	public GameRunnable(TowerMapConfiguration config){
 		GameAPI.getAPI().getGameServer().setGameState(GameState.RUNNING);
@@ -86,17 +86,8 @@ public class GameRunnable extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		GameAPI.setJoinable(time > MAX_TIME / 2);
-		if(time == MAX_TIME - 2){
-			damage = true;
-
-			for(Player player : Bukkit.getOnlinePlayers()){
-				BadblockPlayer bp = (BadblockPlayer) player;
-				bp.pseudoJail(bp.getTeam().teamData(TowerTeamData.class).getRespawnLocation(), 300.0d);
-			}
-		} else if(time == 0){
-			forceEnd = true;
-		}
+		time++;
+		GameAPI.setJoinable(time > 900);
 
 		int size = GameAPI.getAPI().getTeams().size();
 
@@ -211,7 +202,6 @@ public class GameRunnable extends BukkitRunnable {
 			return;
 		}
 
-		time--;
 	}
 
 	private static void incrementAchievements(BadblockPlayer player, PlayerAchievement... achievements){
