@@ -74,7 +74,8 @@ public class DeathListener extends BadListener {
 		player.inGameData(TowerData.class).deaths++;
 		player.getCustomObjective().generate();
 
-		e.setTimeBeforeRespawn(3);
+		e.setLightning(true);
+		e.setTimeBeforeRespawn(0);
 		respawnPlace = player.getTeam().teamData(TowerTeamData.class).getRespawnLocation();
 
 		if(killer != null){
