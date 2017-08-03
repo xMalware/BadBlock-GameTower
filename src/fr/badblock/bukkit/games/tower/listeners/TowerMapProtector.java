@@ -135,7 +135,7 @@ public class TowerMapProtector implements MapProtector {
 
 	@Override
 	public boolean canBeingDamaged(BadblockPlayer player) {
-		return GameRunnable.damage;
+		return inGame();
 	}
 
 	@Override

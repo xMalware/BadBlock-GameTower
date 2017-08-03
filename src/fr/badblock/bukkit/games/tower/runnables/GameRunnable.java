@@ -33,7 +33,6 @@ import lombok.Getter;
 
 public class GameRunnable extends BukkitRunnable {
 	//public static final int MAX_TIME = 60 * 60 * 24;
-	public static boolean damage = false;
 
 	public boolean forceEnd 		 = false;
 	@Getter
