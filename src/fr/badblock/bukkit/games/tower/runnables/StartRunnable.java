@@ -108,7 +108,12 @@ public class StartRunnable extends BukkitRunnable {
 		if(currentPlayers < PluginTower.getInstance().getMinPlayers()) return;
 		
 		startGame();
-		if (time >= 30 && Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers()) time = 30;
+		int t = TowerScoreboard.run ? 10 : 30;
+		if (time >= t && (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() || 
+				(PluginTower.getInstance().getConfiguration().enabledAutoTeamManager && Bukkit.getOnlinePlayers().size() 
+						>= PluginTower.getInstance().getConfiguration().maxPlayersAutoTeam * PluginTower.getInstance().getAPI().getTeams().size()))) {
+			time = t;
+		}
 	}
 	
 	public static void startGame(){

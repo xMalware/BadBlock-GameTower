@@ -69,7 +69,6 @@ public class DeathListener extends BadListener {
 		if (player.getOpenInventory() != null && player.getOpenInventory().getCursor() != null)
 			player.getOpenInventory().setCursor(null);
 		Location respawnPlace = null;
-
 		player.getPlayerData().incrementStatistic("tower", TowerScoreboard.DEATHS);
 		player.inGameData(TowerData.class).deaths++;
 		player.getCustomObjective().generate();

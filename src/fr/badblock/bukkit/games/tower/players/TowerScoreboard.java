@@ -22,6 +22,12 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 	private CustomObjective objective;
 	private BadblockPlayer  player;
 
+	public static boolean run = false;
+	
+	static {
+		
+	}
+	
 	public TowerScoreboard(BadblockPlayer player){
 		this.objective = GameAPI.getAPI().buildCustomObjective("tower");
 		this.player    = player;
@@ -32,6 +38,7 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		if (file.exists())
 		{
 			gameName = "§rTower§6§lRUN &d/o\\";
+			run = true;
 		}
 		objective.setDisplayName("&b&o" + gameName);
 		objective.setGenerator(this);
