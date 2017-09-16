@@ -1,5 +1,7 @@
 package fr.badblock.bukkit.games.tower.players;
 
+import java.io.File;
+
 import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
 import fr.badblock.bukkit.games.tower.runnables.StartRunnable;
@@ -25,7 +27,13 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		this.player    = player;
 
 		objective.showObjective(player);
-		objective.setDisplayName("&b&o" + GameAPI.getGameName());
+		String gameName = GameAPI.getGameName();
+		File file = new File(PluginTower.getInstance().getDataFolder(), "run.json");
+		if (file.exists())
+		{
+			gameName = "§rTower§6§lRUN &d/o\\";
+		}
+		objective.setDisplayName("&b&o" + gameName);
 		objective.setGenerator(this);
 
 		objective.generate();

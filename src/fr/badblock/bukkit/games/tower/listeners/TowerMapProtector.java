@@ -13,7 +13,6 @@ import org.bukkit.entity.Item;
 import org.bukkit.event.block.Action;
 
 import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
-import fr.badblock.bukkit.games.tower.runnables.GameRunnable;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;

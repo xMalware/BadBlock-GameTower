@@ -80,7 +80,7 @@ public class TowerTeamData implements TeamData {
 			if(bPlayer.getCustomObjective() != null)
 				bPlayer.getCustomObjective().generate();
 
-			bPlayer.sendTranslatedTitle("tower.mark-title", marks, player.getName(), player.getTeam().getChatName());
+			bPlayer.sendTranslatedMessage("tower.mark-title", marks, player.getName(), player.getTeam().getChatName());
 			bPlayer.sendTimings(10, 40, 10);
 		}
 	}
