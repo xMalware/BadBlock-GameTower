@@ -10,6 +10,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.bukkit.games.tower.TowerAchievementList;
@@ -52,7 +54,7 @@ public class JoinListener extends BadListener {
 			player.teleport(PluginTower.getInstance().getConfiguration().spawn.getHandle());
 			player.sendTimings(0, 80, 20);
 			player.sendTranslatedTabHeader(new TranslatableString("tower.tab.header"), new TranslatableString("tower.tab.footer"));
-
+			
 			GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
 		}
 	}
@@ -112,7 +114,8 @@ public class JoinListener extends BadListener {
 		player.teleport(location);
 		player.setGameMode(GameMode.SURVIVAL);
 		player.getCustomObjective().generate();
-
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+		
 		boolean good = true;
 
 		for(PlayerKit toUnlock : PluginTower.getInstance().getKits().values()){
