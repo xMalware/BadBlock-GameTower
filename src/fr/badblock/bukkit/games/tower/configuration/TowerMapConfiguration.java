@@ -18,6 +18,7 @@ import lombok.Data;
 public class TowerMapConfiguration {
 	private int				  time;
 	private int				  dimension;
+	private int				  maxY;
 	
 	/*
 	 * Pour empêcher les joueurs de sortir

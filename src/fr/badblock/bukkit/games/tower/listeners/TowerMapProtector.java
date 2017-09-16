@@ -12,7 +12,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.block.Action;
 
+import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
+import fr.badblock.bukkit.games.tower.players.TowerScoreboard;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -27,7 +29,7 @@ public class TowerMapProtector implements MapProtector {
 	@Override
 	public boolean blockPlace(BadblockPlayer player, Block block) {
 		if(block != null && inGame()){
-			
+
 			if(block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST)
 				return player.hasAdminMode();
 
@@ -37,6 +39,15 @@ public class TowerMapProtector implements MapProtector {
 				}
 			}
 
+		}
+
+		if (TowerScoreboard.run)
+		{
+			if (block.getLocation().getY() >= PluginTower.getInstance().getMapConfiguration().getMaxY())
+			{
+				player.sendTranslatedMessage("tower.heightlimit");
+				return player.hasAdminMode();
+			}
 		}
 
 		return inGame() || player.hasAdminMode();
@@ -240,7 +251,7 @@ public class TowerMapProtector implements MapProtector {
 	public boolean destroyArrow() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean canEntityBeingDamaged(Entity entity, BadblockPlayer badblockPlayer) {
 		return false;
