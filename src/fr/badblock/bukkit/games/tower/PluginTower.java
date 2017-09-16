@@ -20,6 +20,7 @@ import fr.badblock.bukkit.games.tower.listeners.PartyJoinListener;
 import fr.badblock.bukkit.games.tower.listeners.PlayerMountListener;
 import fr.badblock.bukkit.games.tower.listeners.QuitListener;
 import fr.badblock.bukkit.games.tower.listeners.TowerMapProtector;
+import fr.badblock.bukkit.games.tower.players.TowerScoreboard;
 import fr.badblock.bukkit.games.tower.runnables.PreStartRunnable;
 import fr.badblock.gameapi.BadblockPlugin;
 import fr.badblock.gameapi.GameAPI;
@@ -123,6 +124,17 @@ public class PluginTower extends BadblockPlugin {
 			
 			maxPlayers = getAPI().getTeams().size() * configuration.maxPlayersInTeam;
 			kits	   = getAPI().loadKits(GameAPI.getInternalGameName());
+			if (TowerScoreboard.run)
+			{
+				// dégueu mais bon
+				for (String string : kits.keySet())
+				{
+					if (!string.equalsIgnoreCase("tower_vip") && !string.equalsIgnoreCase("defaultkit"))
+					{
+						kits.remove(string);
+					}
+				}
+			}
 			
 			try { teams.save(teamsFile); } catch (IOException unused){}
 
