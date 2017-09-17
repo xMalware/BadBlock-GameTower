@@ -44,6 +44,7 @@ public class TowerMapConfiguration {
 		
 		time			= config.getValue("time", MapNumber.class, new MapNumber(2000)).getHandle().intValue();
 		dimension		= config.getValue("dimension", MapNumber.class, new MapNumber(0)).getHandle().intValue();
+		maxY			= config.getValue("maxY", MapNumber.class, new MapNumber(0)).getHandle().intValue();
 		//mapBounds 	    = config.getValue("mapBounds", MapSelection.class, new MapSelection()).getHandle();
 		spawnLocation   = config.getValue("spawnLocation", MapLocation.class, new MapLocation()).getHandle();
 		iron			= config.getValue("iron", MapLocation.class, new MapLocation()).getHandle();
