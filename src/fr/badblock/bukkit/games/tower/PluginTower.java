@@ -112,11 +112,16 @@ public class PluginTower extends BadblockPlugin {
 				@Override
 				public void run()
 				{
-					World world = Bukkit.getWorlds().get(0);
-					world.setWeatherDuration(0);
-					world.setThundering(false);
+					Bukkit.getWorlds().forEach(world -> {
+						world.setTime(2000L);
+						world.setStorm(false);
+						world.setThundering(false);
+						world.setThunderDuration(0);
+						world.setWeatherDuration(0);
+					    System.out.println("Set weather sun!");
+					});
 				}
-			}, 0, 20);
+			}, 20 * 10, 20 * 30);
 
 			File configFile    = new File(getDataFolder(), CONFIG);
 			this.configuration = JsonUtils.load(configFile, TowerConfiguration.class);
@@ -248,8 +253,10 @@ public class PluginTower extends BadblockPlugin {
 			Bukkit.getWorlds().forEach(world -> {
 				world.setTime(2000L);
 				world.setStorm(false);
+				world.setThundering(false);
 				world.setThunderDuration(0);
 				world.setWeatherDuration(0);
+			    System.out.println("Set weather sun!");
 				world.getEntities().forEach(entity -> entity.remove());
 			});
 		} catch(Throwable e){
