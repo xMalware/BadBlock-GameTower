@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -40,6 +41,12 @@ public class JoinListener extends BadListener {
 		e.getPlayer().teleport(PluginTower.getInstance().getMapConfiguration().getSpawnLocation());
 
 		new TowerScoreboard(e.getPlayer());
+	}
+	
+	@EventHandler
+	public void onWeatherChange(WeatherChangeEvent event)
+	{
+		event.setCancelled(event.toWeatherState());
 	}
 
 	@EventHandler
