@@ -36,6 +36,9 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 
 public class JoinListener extends BadListener {
+	
+	public long time = System.currentTimeMillis() + 15000;
+	
 	@EventHandler
 	public void onSpectatorJoin(SpectatorJoinEvent e){
 		e.getPlayer().teleport(PluginTower.getInstance().getMapConfiguration().getSpawnLocation());
@@ -46,6 +49,8 @@ public class JoinListener extends BadListener {
 	@EventHandler
 	public void onWeatherChange(WeatherChangeEvent event)
 	{
+		if (time > System.currentTimeMillis())
+			return;
 		event.setCancelled(event.toWeatherState());
 	}
 
