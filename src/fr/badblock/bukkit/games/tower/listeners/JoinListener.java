@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -37,21 +38,13 @@ import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 
 public class JoinListener extends BadListener {
 	
-	public long time = System.currentTimeMillis() + 15000;
+	public long time = -1;
 	
 	@EventHandler
 	public void onSpectatorJoin(SpectatorJoinEvent e){
 		e.getPlayer().teleport(PluginTower.getInstance().getMapConfiguration().getSpawnLocation());
 
 		new TowerScoreboard(e.getPlayer());
-	}
-	
-	@EventHandler
-	public void onWeatherChange(WeatherChangeEvent event)
-	{
-		if (time > System.currentTimeMillis())
-			return;
-		event.setCancelled(event.toWeatherState());
 	}
 
 	@EventHandler
