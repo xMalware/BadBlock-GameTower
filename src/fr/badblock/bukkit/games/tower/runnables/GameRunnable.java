@@ -22,6 +22,7 @@ import fr.badblock.bukkit.games.tower.result.TowerResults;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.game.GameState;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
@@ -152,6 +153,7 @@ public class GameRunnable extends BukkitRunnable {
 					}.runTaskTimer(GameAPI.getAPI(), 5L, 5L);
 					bp.sendTranslatedTitle("tower.title-win", winner.getChatName());
 					bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.WINS);
+					bp.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.WINS, 1);
 
 					incrementAchievements(bp, TowerAchievementList.TOWER_WIN_1, TowerAchievementList.TOWER_WIN_2, TowerAchievementList.TOWER_WIN_3, TowerAchievementList.TOWER_WIN_4);
 				} else {
@@ -163,6 +165,7 @@ public class GameRunnable extends BukkitRunnable {
 
 					if(bp.getBadblockMode() == BadblockMode.PLAYER)
 						bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.LOOSES);
+					bp.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.LOOSES, 1);
 				}
 				
 				int rbadcoins = badcoins < 2 ? 2 : (int) badcoins;
@@ -186,6 +189,10 @@ public class GameRunnable extends BukkitRunnable {
 					bp.getCustomObjective().generate();
 			}
 
+			// Added 
+			
+			RankedManager.instance.fill(RankedManager.instance.getCurrentRankedGameName());
+			
 			new TowerResults(TimeUnit.SECOND.toShort(time, TimeUnit.SECOND, TimeUnit.HOUR), winner);
 			new EndEffectRunnable(winnerLocation, winner).runTaskTimer(GameAPI.getAPI(), 0, 1L);
 			new KickRunnable().runTaskTimer(GameAPI.getAPI(), 0, 20L);

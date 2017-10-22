@@ -12,6 +12,7 @@ import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.configuration.BadConfiguration;
 import fr.badblock.gameapi.configuration.values.MapLocation;
 import fr.badblock.gameapi.configuration.values.MapSelection;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.data.TeamData;
@@ -48,6 +49,7 @@ public class TowerTeamData implements TeamData {
 		player.inGameData(TowerData.class).marks++;
 		player.inGameData(TowerData.class).nextMark = System.currentTimeMillis() + 10_000L;
 		player.getPlayerData().incrementStatistic("tower", TowerScoreboard.MARKS);
+		player.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.MARKS, 1);
 
 		incrementAchievements(player, TowerAchievementList.TOWER_MARK_1, TowerAchievementList.TOWER_MARK_2, TowerAchievementList.TOWER_MARK_3, TowerAchievementList.TOWER_MARK_4);
 

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -27,6 +26,7 @@ import fr.badblock.gameapi.BadblockPlugin;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.AchievementList;
 import fr.badblock.gameapi.game.GameServer.WhileRunningConnectionTypes;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.run.BadblockGame;
@@ -259,6 +259,10 @@ public class PluginTower extends BadblockPlugin {
 			    System.out.println("Set weather sun!");
 				world.getEntities().forEach(entity -> entity.remove());
 			});
+			
+			// Ranked
+			RankedManager.instance.initialize(RankedManager.instance.getCurrentRankedGameName(), "wins", "kills", "marks", "deaths", "looses");
+			
 		} catch(Throwable e){
 			e.printStackTrace();
 		}
