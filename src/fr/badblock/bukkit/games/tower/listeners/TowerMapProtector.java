@@ -194,7 +194,7 @@ public class TowerMapProtector implements MapProtector {
 
 	@Override
 	public boolean allowRaining() {
-		return false;
+		return true;
 	}
 
 	@Override
