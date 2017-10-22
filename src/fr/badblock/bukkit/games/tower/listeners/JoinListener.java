@@ -54,11 +54,11 @@ public class JoinListener extends BadListener {
 			player.teleport(PluginTower.getInstance().getConfiguration().spawn.getHandle());
 			player.sendTimings(0, 80, 20);
 			player.sendTranslatedTabHeader(new TranslatableString("tower.tab.header"), new TranslatableString("tower.tab.footer"));
-			
+
 			GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
 		}
 	}
-	
+
 	@EventHandler
 	public void onLogin(PlayerLoginEvent e){
 
@@ -110,12 +110,14 @@ public class JoinListener extends BadListener {
 		BadblockTeam team = player.getTeam();
 		if (team == null) return;
 		Location location = team.teamData(TowerTeamData.class).getRespawnLocation();
+		player.leaveVehicle();
+		player.eject();
 		player.changePlayerDimension(BukkitUtils.getEnvironment( PluginTower.getInstance().getMapConfiguration().getDimension() ));
 		player.teleport(location);
 		player.setGameMode(GameMode.SURVIVAL);
 		player.getCustomObjective().generate();
 		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
-		
+
 		boolean good = true;
 
 		for(PlayerKit toUnlock : PluginTower.getInstance().getKits().values()){

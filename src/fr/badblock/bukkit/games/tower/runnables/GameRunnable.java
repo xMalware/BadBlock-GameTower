@@ -165,11 +165,6 @@ public class GameRunnable extends BukkitRunnable {
 						bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.LOOSES);
 				}
 				
-				if(badcoins > 20 * bp.getPlayerData().getBadcoinsMultiplier())
-					badcoins = 20 * bp.getPlayerData().getBadcoinsMultiplier();
-				if(xp > 50 * bp.getPlayerData().getXpMultiplier())
-					xp = 50 * bp.getPlayerData().getXpMultiplier();
-				
 				int rbadcoins = badcoins < 2 ? 2 : (int) badcoins;
 				int rxp		  = xp < 5 ? 5 : (int) xp;
 

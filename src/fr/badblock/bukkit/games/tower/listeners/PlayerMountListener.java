@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import fr.badblock.bukkit.games.tower.players.TowerData;
+import fr.badblock.bukkit.games.tower.runnables.StartRunnable;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -32,7 +33,7 @@ public class PlayerMountListener extends BadListener {
 			return;
 		
 		data.cooldown = System.currentTimeMillis() + 1_000;
-		mount(e.getRightClicked(), e.getPlayer());
+		mount(e.getRightClicked(), player);
 	}
 	
 	@EventHandler
@@ -51,6 +52,15 @@ public class PlayerMountListener extends BadListener {
 	}
 	
 	private void mount(Entity base, Entity to){
+		if (StartRunnable.time <= 5)
+		{
+			if (to.getType().equals(EntityType.PLAYER))
+			{
+				BadblockPlayer player = (BadblockPlayer) to;
+				player.sendTranslatedMessage("game.youcantmountfornow");
+			}
+			return;
+		}
 		Entity e = null;
 		
 		int count = 0;
