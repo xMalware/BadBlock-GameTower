@@ -90,7 +90,7 @@ public class DeathListener extends BadListener {
 		if(killer != null && killer.getType() == EntityType.PLAYER){
 			BadblockPlayer bKiller = (BadblockPlayer) killer;
 			bKiller.getPlayerData().incrementStatistic("tower", TowerScoreboard.KILLS);
-			player.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.KILLS, 1);
+			bKiller.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.KILLS, 1);
 			bKiller.inGameData(TowerData.class).kills++;
 
 			bKiller.getCustomObjective().generate();
