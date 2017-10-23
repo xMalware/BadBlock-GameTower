@@ -166,8 +166,10 @@ public class GameRunnable extends BukkitRunnable {
 					bp.sendTranslatedTitle("tower.title-loose", winner.getChatName());
 
 					if(bp.getBadblockMode() == BadblockMode.PLAYER)
+					{
 						bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.LOOSES);
-					bp.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.LOOSES, 1);
+						bp.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.LOOSES, 1);
+					}
 				}
 
 				int rbadcoins = badcoins < 2 ? 2 : (int) badcoins;
@@ -206,8 +208,8 @@ public class GameRunnable extends BukkitRunnable {
 						double looses = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.LOOSES);
 						double marks = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.MARKS);
 						double total = 
-								((((kills / 0.5D) + (kills * marks) + (marks * 2))
-								* (kills / (deaths > 0 ? deaths : 1)))) / (((1 + looses) * (1 + wins)) + (wins * 4));
+								((((kills / 0.5D) + (wins * 4) + (kills * marks) + (marks * 2))
+										* (kills / (deaths > 0 ? deaths : 1)))) / (1 + looses);
 						return (long) total;
 					}
 
