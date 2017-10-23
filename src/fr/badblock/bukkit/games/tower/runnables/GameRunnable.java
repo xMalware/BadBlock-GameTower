@@ -22,12 +22,14 @@ import fr.badblock.bukkit.games.tower.result.TowerResults;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.game.GameState;
+import fr.badblock.gameapi.game.rankeds.RankedCalc;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.TimeUnit;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import lombok.Getter;
@@ -117,7 +119,7 @@ public class GameRunnable extends BukkitRunnable {
 			BadblockTeam winner = max;
 
 			GameAPI.getAPI().getGameServer().setGameState(GameState.FINISHED);
-			
+
 			Location winnerLocation = PluginTower.getInstance().getMapConfiguration().getSpawnLocation();
 			Location looserLocation = winnerLocation.clone().add(0d, 7d, 0d);
 
@@ -167,7 +169,7 @@ public class GameRunnable extends BukkitRunnable {
 						bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.LOOSES);
 					bp.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.LOOSES, 1);
 				}
-				
+
 				int rbadcoins = badcoins < 2 ? 2 : (int) badcoins;
 				int rxp		  = xp < 5 ? 5 : (int) xp;
 
@@ -189,10 +191,28 @@ public class GameRunnable extends BukkitRunnable {
 					bp.getCustomObjective().generate();
 			}
 
-			// Added 
-			
-			RankedManager.instance.fill(RankedManager.instance.getCurrentRankedGameName());
-			
+			// Work with rankeds
+			String rankedGameName = RankedManager.instance.getCurrentRankedGameName();
+			for (BadblockPlayer player : BukkitUtils.getPlayers())
+			{
+				RankedManager.instance.calcPoints(rankedGameName, player, new RankedCalc()
+				{
+
+					@Override
+					public long done() {
+						double kills = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.KILLS);
+						double deaths = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.DEATHS);
+						double wins = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.WINS);
+						double looses = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.LOOSES);
+						double marks = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.MARKS);
+						double total = ((((kills) * marks) * (kills / (deaths > 0 ? deaths : 1))) / (1 + looses)) * (1 + wins);
+						return (long) total;
+					}
+
+				});
+			}
+			RankedManager.instance.fill(rankedGameName);
+
 			new TowerResults(TimeUnit.SECOND.toShort(time, TimeUnit.SECOND, TimeUnit.HOUR), winner);
 			new EndEffectRunnable(winnerLocation, winner).runTaskTimer(GameAPI.getAPI(), 0, 1L);
 			new KickRunnable().runTaskTimer(GameAPI.getAPI(), 0, 20L);
