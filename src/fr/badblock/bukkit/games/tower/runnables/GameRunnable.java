@@ -205,7 +205,9 @@ public class GameRunnable extends BukkitRunnable {
 						double wins = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.WINS);
 						double looses = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.LOOSES);
 						double marks = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.MARKS);
-						double total = ((((kills) * marks) * (kills / (deaths > 0 ? deaths : 1))) / (1 + looses)) * (1 + wins);
+						double total = 
+								((((kills / 0.5D) + (kills * marks) + (marks * 2))
+								* (kills / (deaths > 0 ? deaths : 1)))) / (((1 + looses) * (1 + wins)) + (wins * 4));
 						return (long) total;
 					}
 
