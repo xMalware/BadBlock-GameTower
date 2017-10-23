@@ -261,7 +261,8 @@ public class PluginTower extends BadblockPlugin {
 			});
 			
 			// Ranked
-			RankedManager.instance.initialize(RankedManager.instance.getCurrentRankedGameName(), "wins", "kills", "marks", "deaths", "looses");
+			RankedManager.instance.initialize(RankedManager.instance.getCurrentRankedGameName(), 
+					TowerScoreboard.KILLS, TowerScoreboard.DEATHS, TowerScoreboard.MARKS, TowerScoreboard.WINS, TowerScoreboard.LOOSES);
 			
 		} catch(Throwable e){
 			e.printStackTrace();
