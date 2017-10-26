@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -22,9 +23,9 @@ import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.events.fakedeaths.FakeDeathEvent;
 import fr.badblock.gameapi.events.fakedeaths.FightingDeathEvent;
 import fr.badblock.gameapi.events.fakedeaths.FightingDeathEvent.FightingDeaths;
-import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.events.fakedeaths.NormalDeathEvent;
 import fr.badblock.gameapi.events.fakedeaths.PlayerFakeRespawnEvent;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
@@ -36,6 +37,21 @@ public class DeathListener extends BadListener {
 		e.setDeathMessage(GameMessages.deathEventMessage(e));
 	}
 
+	@EventHandler
+	public void onDamageByEntity(EntityDamageByEntityEvent event)
+	{
+		if (event.getDamager().getType().equals(EntityType.PLAYER))
+		{
+			BadblockPlayer player = (BadblockPlayer) event.getDamager();
+			TowerData towerData = player.inGameData(TowerData.class);
+			if (towerData == null)
+			{
+				return;
+			}
+			towerData.givenDamages += event.getDamage();
+		}
+	}
+	
 	@EventHandler
 	public void onDeath(FightingDeathEvent e){
 		death(e, e.getPlayer(), e.getKiller(), e.getLastDamageCause());

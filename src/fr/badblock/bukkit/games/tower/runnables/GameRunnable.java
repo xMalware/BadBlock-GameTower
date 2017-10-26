@@ -1,8 +1,10 @@
 package fr.badblock.bukkit.games.tower.runnables;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,6 +32,7 @@ import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.utils.BukkitUtils;
+import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.general.TimeUnit;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import lombok.Getter;
@@ -217,6 +220,45 @@ public class GameRunnable extends BukkitRunnable {
 				});
 			}
 			RankedManager.instance.fill(rankedGameName);
+
+			// Infos de fin de partie
+			Entry<String, Double> mostDamager = null;
+			Entry<String, Integer> mostDeath = null;
+			Entry<String, Integer> mostObjective = null;
+			for (BadblockPlayer pl : BukkitUtils.getPlayers())
+			{
+				TowerData towerData = pl.inGameData(TowerData.class);
+				if (towerData == null)
+				{
+					continue;
+				}
+				if (mostDamager == null || (mostDamager != null && mostDamager.getValue() < towerData.givenDamages))
+				{
+					mostDamager = new AbstractMap.SimpleEntry<String, Double>(pl.getName(), towerData.givenDamages);
+				}
+				if (mostDeath == null || (mostDeath != null && mostDeath.getValue() < towerData.deaths))
+				{
+					mostDeath = new AbstractMap.SimpleEntry<String, Integer>(pl.getName(), towerData.deaths);
+				}
+				if (mostObjective == null || (mostObjective != null && mostObjective.getValue() < towerData.marks))
+				{
+					mostObjective = new AbstractMap.SimpleEntry<String, Integer>(pl.getName(), towerData.marks);
+				}
+			}
+			for (BadblockPlayer pl : BukkitUtils.getPlayers())
+			{
+				pl.sendMessage(" ");
+				String mDamager = mostDamager == null ? pl.getTranslatedMessage("tower.infos.no")[0] :
+						pl.getTranslatedMessage("tower.infos.damager", mostDamager.getKey(), MathsUtils.round(mostDamager.getValue(), 2))[0];
+				String mDeath = mostDeath == null ? pl.getTranslatedMessage("tower.infos.no")[0] :
+						pl.getTranslatedMessage("tower.infos.death", mostDeath.getKey(), mostDeath.getValue())[0];
+				String mObjective = mostObjective == null ? pl.getTranslatedMessage("tower.infos.no")[0] :
+						pl.getTranslatedMessage("tower.infos.objective", mostObjective.getKey(), mostObjective.getValue())[0];
+				pl.sendTranslatedMessage(mDamager);
+				pl.sendTranslatedMessage(mDeath);
+				pl.sendTranslatedMessage(mObjective);
+				pl.sendMessage(" ");
+			}
 
 			new TowerResults(TimeUnit.SECOND.toShort(time, TimeUnit.SECOND, TimeUnit.HOUR), winner);
 			new EndEffectRunnable(winnerLocation, winner).runTaskTimer(GameAPI.getAPI(), 0, 1L);
