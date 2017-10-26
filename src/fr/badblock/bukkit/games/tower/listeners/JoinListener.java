@@ -35,9 +35,9 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 
 public class JoinListener extends BadListener {
-	
+
 	public long time = -1;
-	
+
 	@EventHandler
 	public void onSpectatorJoin(SpectatorJoinEvent e){
 		e.getPlayer().teleport(PluginTower.getInstance().getMapConfiguration().getSpawnLocation());
@@ -119,7 +119,10 @@ public class JoinListener extends BadListener {
 		player.teleport(location);
 		player.setGameMode(GameMode.SURVIVAL);
 		player.getCustomObjective().generate();
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+		if (GameAPI.getServerName().startsWith("towerE_"))
+		{
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+		}
 
 		boolean good = true;
 

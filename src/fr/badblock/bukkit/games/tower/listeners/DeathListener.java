@@ -17,6 +17,7 @@ import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
 import fr.badblock.bukkit.games.tower.players.TowerData;
 import fr.badblock.bukkit.games.tower.players.TowerScoreboard;
 import fr.badblock.gameapi.BadListener;
+import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.events.fakedeaths.FakeDeathEvent;
 import fr.badblock.gameapi.events.fakedeaths.FightingDeathEvent;
@@ -49,17 +50,20 @@ public class DeathListener extends BadListener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onRespawn(PlayerFakeRespawnEvent e){
 		if (e.getPlayer().getOpenInventory() != null && e.getPlayer().getOpenInventory().getCursor() != null)
 			e.getPlayer().getOpenInventory().setCursor(null);
-		e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+		if (GameAPI.getServerName().startsWith("towerE_"))
+		{
+			e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+		}
 		PluginTower.getInstance().giveDefaultKit(e.getPlayer());
 	}
 
 	private Map<String, Long> lastDeath = new HashMap<>();
-	
+
 	private void death(FakeDeathEvent e, BadblockPlayer player, Entity killer, DamageCause last){
 		if(player.getTeam() == null) return; //WTF
 		if (lastDeath.containsKey(player.getName())) {
