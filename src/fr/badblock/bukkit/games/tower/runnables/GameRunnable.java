@@ -254,9 +254,9 @@ public class GameRunnable extends BukkitRunnable {
 						pl.getTranslatedMessage("tower.infos.death", mostDeath.getKey(), mostDeath.getValue())[0];
 				String mObjective = mostObjective == null ? pl.getTranslatedMessage("tower.infos.objective_no")[0] :
 						pl.getTranslatedMessage("tower.infos.objective", mostObjective.getKey(), mostObjective.getValue())[0];
-				pl.sendTranslatedMessage(mDamager);
-				pl.sendTranslatedMessage(mDeath);
-				pl.sendTranslatedMessage(mObjective);
+				pl.sendMessage(mDamager);
+				pl.sendMessage(mDeath);
+				pl.sendMessage(mObjective);
 				pl.sendMessage(" ");
 			}
 
