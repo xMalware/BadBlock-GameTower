@@ -248,11 +248,11 @@ public class GameRunnable extends BukkitRunnable {
 			for (BadblockPlayer pl : BukkitUtils.getPlayers())
 			{
 				pl.sendMessage(" ");
-				String mDamager = mostDamager == null ? pl.getTranslatedMessage("tower.infos.no")[0] :
+				String mDamager = mostDamager == null ? pl.getTranslatedMessage("tower.infos.damager_no")[0] :
 						pl.getTranslatedMessage("tower.infos.damager", mostDamager.getKey(), MathsUtils.round(mostDamager.getValue(), 2))[0];
-				String mDeath = mostDeath == null ? pl.getTranslatedMessage("tower.infos.no")[0] :
+				String mDeath = mostDeath == null ? pl.getTranslatedMessage("tower.infos.death_no")[0] :
 						pl.getTranslatedMessage("tower.infos.death", mostDeath.getKey(), mostDeath.getValue())[0];
-				String mObjective = mostObjective == null ? pl.getTranslatedMessage("tower.infos.no")[0] :
+				String mObjective = mostObjective == null ? pl.getTranslatedMessage("tower.infos.objective_no")[0] :
 						pl.getTranslatedMessage("tower.infos.objective", mostObjective.getKey(), mostObjective.getValue())[0];
 				pl.sendTranslatedMessage(mDamager);
 				pl.sendTranslatedMessage(mDeath);
