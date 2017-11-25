@@ -31,7 +31,7 @@ public class QuitListener extends BadListener {
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 		if (!player.getGameMode().equals(GameMode.SPECTATOR) && !player.getBadblockMode().equals(BadblockMode.SPECTATOR))
 		{
-			GameMessages.quitMessage(GameAPI.getGameName(), player.getTabGroupPrefix() + player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
+			GameMessages.quitMessage(GameAPI.getGameName(), player.getTabGroupPrefix().getAsLine(player) + player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
 		}
 		
 		if (!inGame()) return;
