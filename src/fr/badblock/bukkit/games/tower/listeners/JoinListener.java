@@ -58,7 +58,7 @@ public class JoinListener extends BadListener {
 			player.sendTimings(0, 80, 20);
 			player.sendTranslatedTabHeader(new TranslatableString("tower.tab.header"), new TranslatableString("tower.tab.footer"));
 
-			GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
+			GameMessages.joinMessage(GameAPI.getGameName(), player.getTabGroupPrefix() + player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
 		}
 	}
 

@@ -1,5 +1,7 @@
 package fr.badblock.bukkit.games.tower.listeners;
 
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -12,8 +14,10 @@ import fr.badblock.gameapi.game.rankeds.RankedCalc;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
+import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 
 public class QuitListener extends BadListener {
 	@EventHandler
@@ -23,9 +27,15 @@ public class QuitListener extends BadListener {
 			StartRunnable.stopGame();
 			StartRunnable.time = StartRunnable.time > 30 ? StartRunnable.time : 30;
 		}
-		if(!inGame()) return;
-		
+
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+		if (!player.getGameMode().equals(GameMode.SPECTATOR) && !player.getBadblockMode().equals(BadblockMode.SPECTATOR))
+		{
+			GameMessages.quitMessage(GameAPI.getGameName(), player.getTabGroupPrefix() + player.getName(), Bukkit.getOnlinePlayers().size(), PluginTower.getInstance().getMaxPlayers()).broadcast();
+		}
+		
+		if (!inGame()) return;
+		
 		BadblockTeam   team   = player.getTeam();
 
 		if(team == null) return;

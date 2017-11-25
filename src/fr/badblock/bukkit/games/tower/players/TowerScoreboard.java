@@ -24,10 +24,6 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 
 	public static boolean run = false;
 	
-	static {
-		
-	}
-	
 	public TowerScoreboard(BadblockPlayer player){
 		this.objective = GameAPI.getAPI().buildCustomObjective("tower");
 		this.player    = player;
