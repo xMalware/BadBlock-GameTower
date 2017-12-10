@@ -24,17 +24,24 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 
 	public static boolean run = false;
 	
+	static
+	{
+		File file = new File(PluginTower.getInstance().getDataFolder(), "run.json");
+		if (file.exists())
+		{
+			run = true;
+		}
+	}
+	
 	public TowerScoreboard(BadblockPlayer player){
 		this.objective = GameAPI.getAPI().buildCustomObjective("tower");
 		this.player    = player;
 
 		objective.showObjective(player);
 		String gameName = GameAPI.getGameName();
-		File file = new File(PluginTower.getInstance().getDataFolder(), "run.json");
-		if (file.exists())
+		if (run)
 		{
 			gameName = "§rTower§6§lRUN &d/o\\";
-			run = true;
 		}
 		objective.setDisplayName("&b&o" + gameName);
 		objective.setGenerator(this);

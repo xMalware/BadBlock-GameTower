@@ -1,6 +1,6 @@
 package fr.badblock.bukkit.games.tower.configuration;
 
-import org.bukkit.Bukkit;
+import java.util.List;
 
 import fr.badblock.gameapi.configuration.values.MapLocation;
 import lombok.NoArgsConstructor;
@@ -15,5 +15,5 @@ public class TowerConfiguration {
 	public int				   maxPlayersAutoTeam = 4;
 	public int    	   		   maxPlayersInTeam = 4;
 	public int    	   		   minPlayers		= 2;
-	public MapLocation 		   spawn			= new MapLocation(Bukkit.getWorlds().get(0).getSpawnLocation());
+	public List<MapLocation>   spawn			= null;
 }

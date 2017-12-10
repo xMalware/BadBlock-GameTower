@@ -54,7 +54,7 @@ public class JoinListener extends BadListener {
 		if (!player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
 			player.setGameMode(GameMode.SURVIVAL);
 			player.sendTranslatedTitle("tower.join.title");
-			player.teleport(PluginTower.getInstance().getConfiguration().spawn.getHandle());
+			player.teleport(PluginTower.getInstance().spawn.getHandle());
 			player.sendTimings(0, 80, 20);
 			player.sendTranslatedTabHeader(new TranslatableString("tower.tab.header"), new TranslatableString("tower.tab.footer"));
 

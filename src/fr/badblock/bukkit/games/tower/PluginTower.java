@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,6 +26,7 @@ import fr.badblock.bukkit.games.tower.runnables.PreStartRunnable;
 import fr.badblock.gameapi.BadblockPlugin;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.AchievementList;
+import fr.badblock.gameapi.configuration.values.MapLocation;
 import fr.badblock.gameapi.game.GameServer.WhileRunningConnectionTypes;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -63,6 +65,8 @@ public class PluginTower extends BadblockPlugin {
 
 	@Getter
 	private Map<String, PlayerKit> kits;
+
+	public MapLocation spawn;
 
 	public void giveDefaultKit(BadblockPlayer player){
 		PlayerKit kit = kits.get(configuration.defaultKit);
@@ -118,7 +122,7 @@ public class PluginTower extends BadblockPlugin {
 						world.setThundering(false);
 						world.setThunderDuration(0);
 						world.setWeatherDuration(0);
-					    System.out.println("Set weather sun!");
+						System.out.println("Set weather sun!");
 					});
 				}
 			}, 20 * 10, 20 * 30);
@@ -127,6 +131,8 @@ public class PluginTower extends BadblockPlugin {
 			this.configuration = JsonUtils.load(configFile, TowerConfiguration.class);
 
 			JsonUtils.save(configFile, configuration, true);
+
+			spawn = configuration.spawn.get(new Random().nextInt(configuration.spawn.size()));
 
 			File 			  teamsFile 	= new File(getDataFolder(), TEAMS_CONFIG);
 			FileConfiguration teams 		= YamlConfiguration.loadConfiguration(teamsFile);
@@ -224,7 +230,10 @@ public class PluginTower extends BadblockPlugin {
 			getAPI().getJoinItems().registerLeaveItem(8, configuration.fallbackServer);
 
 			getAPI().setMapProtector(new TowerMapProtector());
-			getAPI().enableAntiSpawnKill();
+			if (!TowerScoreboard.run)
+			{
+				getAPI().enableAntiSpawnKill();
+			}
 			//getAPI().enableAntiBowSpam(500);
 
 			getAPI().getGameServer().whileRunningConnection(WhileRunningConnectionTypes.SPECTATOR);
@@ -256,14 +265,14 @@ public class PluginTower extends BadblockPlugin {
 				world.setThundering(false);
 				world.setThunderDuration(0);
 				world.setWeatherDuration(0);
-			    System.out.println("Set weather sun!");
+				System.out.println("Set weather sun!");
 				world.getEntities().forEach(entity -> entity.remove());
 			});
-			
+
 			// Ranked
 			RankedManager.instance.initialize(RankedManager.instance.getCurrentRankedGameName(), 
 					TowerScoreboard.KILLS, TowerScoreboard.DEATHS, TowerScoreboard.MARKS, TowerScoreboard.WINS, TowerScoreboard.LOOSES);
-			
+
 		} catch(Throwable e){
 			e.printStackTrace();
 		}
