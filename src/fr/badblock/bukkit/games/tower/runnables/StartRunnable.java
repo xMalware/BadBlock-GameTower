@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class StartRunnable extends BukkitRunnable {
-	public static final int 		  TIME_BEFORE_START = 60;
+	public static final int 		  TIME_BEFORE_START = 10;
 	public static     	StartRunnable task 		        = null;
 	public static    	GameRunnable  gameTask		    = null;
 
@@ -108,7 +108,7 @@ public class StartRunnable extends BukkitRunnable {
 		if(currentPlayers < PluginTower.getInstance().getMinPlayers()) return;
 		
 		startGame();
-		int t = TowerScoreboard.run ? 10 : 30;
+		int t = 5;
 		if (time >= t && (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() || 
 				(PluginTower.getInstance().getConfiguration().enabledAutoTeamManager && Bukkit.getOnlinePlayers().size() 
 						>= PluginTower.getInstance().getConfiguration().maxPlayersAutoTeam * PluginTower.getInstance().getAPI().getTeams().size()))) {
