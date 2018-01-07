@@ -19,7 +19,7 @@ public class MoveListener extends BadListener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent e){
 		if(e.getTo().getY() <= 0.0d && !inGame()){
-			Location spawn = PluginTower.getInstance().getConfiguration().spawn.getHandle();
+			Location spawn = PluginTower.getInstance().spawn.getHandle();
 
 			Entity vehicle = null;
 

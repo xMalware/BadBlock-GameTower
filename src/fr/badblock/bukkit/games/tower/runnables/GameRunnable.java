@@ -1,8 +1,10 @@
 package fr.badblock.bukkit.games.tower.runnables;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,11 +24,15 @@ import fr.badblock.bukkit.games.tower.result.TowerResults;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.game.GameState;
+import fr.badblock.gameapi.game.rankeds.RankedCalc;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.gameapi.utils.BukkitUtils;
+import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.general.TimeUnit;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import lombok.Getter;
@@ -116,7 +122,7 @@ public class GameRunnable extends BukkitRunnable {
 			BadblockTeam winner = max;
 
 			GameAPI.getAPI().getGameServer().setGameState(GameState.FINISHED);
-			
+
 			Location winnerLocation = PluginTower.getInstance().getMapConfiguration().getSpawnLocation();
 			Location looserLocation = winnerLocation.clone().add(0d, 7d, 0d);
 
@@ -152,6 +158,7 @@ public class GameRunnable extends BukkitRunnable {
 					}.runTaskTimer(GameAPI.getAPI(), 5L, 5L);
 					bp.sendTranslatedTitle("tower.title-win", winner.getChatName());
 					bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.WINS);
+					bp.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.WINS, 1);
 
 					incrementAchievements(bp, TowerAchievementList.TOWER_WIN_1, TowerAchievementList.TOWER_WIN_2, TowerAchievementList.TOWER_WIN_3, TowerAchievementList.TOWER_WIN_4);
 				} else {
@@ -162,14 +169,12 @@ public class GameRunnable extends BukkitRunnable {
 					bp.sendTranslatedTitle("tower.title-loose", winner.getChatName());
 
 					if(bp.getBadblockMode() == BadblockMode.PLAYER)
+					{
 						bp.getPlayerData().incrementStatistic("tower", TowerScoreboard.LOOSES);
+						bp.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.LOOSES, 1);
+					}
 				}
-				
-				if(badcoins > 20 * bp.getPlayerData().getBadcoinsMultiplier())
-					badcoins = 20 * bp.getPlayerData().getBadcoinsMultiplier();
-				if(xp > 50 * bp.getPlayerData().getXpMultiplier())
-					xp = 50 * bp.getPlayerData().getXpMultiplier();
-				
+
 				int rbadcoins = badcoins < 2 ? 2 : (int) badcoins;
 				int rxp		  = xp < 5 ? 5 : (int) xp;
 
@@ -189,6 +194,70 @@ public class GameRunnable extends BukkitRunnable {
 
 				if(bp.getCustomObjective() != null)
 					bp.getCustomObjective().generate();
+			}
+
+			// Work with rankeds
+			String rankedGameName = RankedManager.instance.getCurrentRankedGameName();
+			for (BadblockPlayer player : BukkitUtils.getPlayers())
+			{
+				RankedManager.instance.calcPoints(rankedGameName, player, new RankedCalc()
+				{
+
+					@Override
+					public long done() {
+						double kills = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.KILLS);
+						double deaths = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.DEATHS);
+						double wins = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.WINS);
+						double looses = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.LOOSES);
+						double marks = RankedManager.instance.getData(rankedGameName, player, TowerScoreboard.MARKS);
+						double total = 
+								( (kills / 0.5D) + (wins * 4) + 
+										( (kills * marks) + (marks * 2) * (kills / (deaths > 0 ? deaths : 1) ) ) )
+								/ (1 + looses);
+						return (long) total;
+					}
+
+				});
+			}
+			RankedManager.instance.fill(rankedGameName);
+
+			// Infos de fin de partie
+			Entry<String, Double> mostDamager = null;
+			Entry<String, Integer> mostDeath = null;
+			Entry<String, Integer> mostObjective = null;
+			for (BadblockPlayer pl : BukkitUtils.getPlayers())
+			{
+				TowerData towerData = pl.inGameData(TowerData.class);
+				if (towerData == null)
+				{
+					continue;
+				}
+				if (mostDamager == null || (mostDamager != null && mostDamager.getValue() < towerData.givenDamages))
+				{
+					mostDamager = new AbstractMap.SimpleEntry<String, Double>(pl.getName(), towerData.givenDamages);
+				}
+				if (mostDeath == null || (mostDeath != null && mostDeath.getValue() < towerData.deaths))
+				{
+					mostDeath = new AbstractMap.SimpleEntry<String, Integer>(pl.getName(), towerData.deaths);
+				}
+				if (mostObjective == null || (mostObjective != null && mostObjective.getValue() < towerData.marks))
+				{
+					mostObjective = new AbstractMap.SimpleEntry<String, Integer>(pl.getName(), towerData.marks);
+				}
+			}
+			for (BadblockPlayer pl : BukkitUtils.getPlayers())
+			{
+				pl.sendMessage(" ");
+				String mDamager = mostDamager == null ? pl.getTranslatedMessage("tower.infos.damager_no")[0] :
+						pl.getTranslatedMessage("tower.infos.damager", mostDamager.getKey(), MathsUtils.round(mostDamager.getValue(), 2))[0];
+				String mDeath = mostDeath == null ? pl.getTranslatedMessage("tower.infos.death_no")[0] :
+						pl.getTranslatedMessage("tower.infos.death", mostDeath.getKey(), mostDeath.getValue())[0];
+				String mObjective = mostObjective == null ? pl.getTranslatedMessage("tower.infos.objective_no")[0] :
+						pl.getTranslatedMessage("tower.infos.objective", mostObjective.getKey(), mostObjective.getValue())[0];
+				pl.sendMessage(mDamager);
+				pl.sendMessage(mDeath);
+				pl.sendMessage(mObjective);
+				pl.sendMessage(" ");
 			}
 
 			new TowerResults(TimeUnit.SECOND.toShort(time, TimeUnit.SECOND, TimeUnit.HOUR), winner);

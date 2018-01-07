@@ -4,9 +4,7 @@ import java.io.File;
 
 import org.bukkit.command.CommandSender;
 
-import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.gameapi.command.MapAbstractCommand;
-import fr.badblock.gameapi.configuration.values.MapLocation;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
@@ -22,14 +20,9 @@ public class TowerCommand extends MapAbstractCommand {
 		if(args.length == 0) return false;
 		
 		BadblockPlayer player = (BadblockPlayer) sender;
-		PluginTower plug = PluginTower.getInstance();
 
 		
 		switch(args[0].toLowerCase()){
-			case "mainspawn":
-				plug.getConfiguration().spawn = new MapLocation(player.getLocation());
-				plug.saveJsonConfig();
-			break;
 			case "spawnlocation":
 				if(args.length < 2)
 					return false;

@@ -27,6 +27,16 @@ public class GameCommand extends AbstractCommand {
 		PluginTower plug = PluginTower.getInstance();
 
 		switch(args[0].toLowerCase()){
+		case "force":
+			String msge = "commands.gtower.start";
+
+			if(!StartRunnable.started()){
+				StartRunnable.startGame();
+				StartRunnable.time = 10;
+			} else msge += "-fail";
+
+			player.sendTranslatedMessage(msge);
+			break;
 		case "start":
 			String msg = "commands.gtower.start";
 
