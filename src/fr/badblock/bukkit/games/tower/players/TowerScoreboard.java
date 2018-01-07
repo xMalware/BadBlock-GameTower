@@ -6,24 +6,30 @@ import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
 import fr.badblock.bukkit.games.tower.runnables.StartRunnable;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.scoreboard.BadblockScoreboardGenerator;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.gameapi.utils.general.Callback;
+import fr.badblock.gameapi.utils.general.MathsUtils;
 
 public class TowerScoreboard extends BadblockScoreboardGenerator {
 	public static final String WINS 	  = "wins",
-							   KILLS 	  = "kills",
-							   DEATHS 	  = "deaths",
-							   LOOSES 	  = "looses",
-							   MARKS	  = "marks";
-	
+			KILLS 	  = "kills",
+			DEATHS 	  = "deaths",
+			LOOSES 	  = "looses",
+			MARKS	  = "marks";
+
 	private CustomObjective objective;
 	private BadblockPlayer  player;
 
+	private int totalRank;
+	private int monthRank;
+
 	public static boolean run = false;
-	
+
 	static
 	{
 		File file = new File(PluginTower.getInstance().getDataFolder(), "run.json");
@@ -32,58 +38,87 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 			run = true;
 		}
 	}
-	
+
 	public TowerScoreboard(BadblockPlayer player){
 		this.objective = GameAPI.getAPI().buildCustomObjective("tower");
 		this.player    = player;
 
 		objective.showObjective(player);
+
+		String rankedGameName = RankedManager.instance.getCurrentRankedGameName();
+		RankedManager.instance.getTotalRank(rankedGameName, player, new Callback<Integer>()
+		{
+
+			@Override
+			public void done(Integer result, Throwable error) {
+				totalRank = result.intValue();
+			}
+
+		});
+		RankedManager.instance.getMonthRank(rankedGameName, player, new Callback<Integer>()
+		{
+
+			@Override
+			public void done(Integer result, Throwable error) {
+				monthRank = result.intValue();
+			}
+
+		});
+
 		String gameName = GameAPI.getGameName();
 		if (run)
 		{
-			gameName = "§rTower§6§lRUN &d/o\\";
+			gameName = "§6§lTowerRun";
 		}
-		objective.setDisplayName("&b&o" + gameName);
+		else
+		{
+			gameName = "§6§lTower";
+		}
+		objective.setDisplayName(gameName);
 		objective.setGenerator(this);
 
 		objective.generate();
 		doBadblockFooter(objective);
 	}
-	
+
 	@Override
 	public void generate(){
+		if (StartRunnable.gameTask != null)
+		{
+			String gameName = GameAPI.getGameName();
+			if (run)
+			{
+				gameName = "§6§lTowerRun";
+			}
+			else
+			{
+				gameName = "§6§lTower";
+			}
+			objective.setDisplayName("§6" + gameName + " §d>> §e" + time(StartRunnable.gameTask.getTime()));
+		}
 		objective.changeLine(15, "&8&m----------------------");
 
 		int i = 14;
-		
-		if(StartRunnable.gameTask != null){
-			objective.changeLine(i--,  i18n("tower.scoreboard.time-desc"));
-			objective.changeLine(i--,  i18n("tower.scoreboard.time", time(StartRunnable.gameTask.getTime()) ));
-			
-			//objective.changeLine(i--,  i18n("tower.scoreboard.position", time(StartRunnable.gameTask.getTime()) ));
-		}
-		if (PluginTower.getInstance().getMapConfiguration() != null) {
-			objective.changeLine(i,  ""); i--;
-			if (!PluginTower.getInstance().getMapConfiguration().getAllowBows())
-				objective.changeLine(i--,  i18n("tower.scoreboard.nobows"));
-			else objective.changeLine(i--,  i18n("tower.scoreboard.withbows"));
-		}
-		
+
 		objective.changeLine(i--, "");
-		
+
 		for(BadblockTeam team : GameAPI.getAPI().getTeams()){
 			TowerTeamData data = team.teamData(TowerTeamData.class);
-			objective.changeLine(i, team.getChatName().getAsLine(player) + " > &7" + data.getMarks());
+			objective.changeLine(i, team.getChatName().getAsLine(player) + " §d(" + team.getOnlinePlayers().size() + ") §8> &7" + data.getMarks());
 			i--;
 		}
 
 		if(player.getBadblockMode() != BadblockMode.SPECTATOR){
 			objective.changeLine(i,  ""); i--;
 
-			objective.changeLine(i,  i18n("tower.scoreboard.wins", stat(WINS))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.monthrank", monthRank)); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.totalrank", totalRank)); i--;
 			objective.changeLine(i,  i18n("tower.scoreboard.kills", stat(KILLS))); i--;
 			objective.changeLine(i,  i18n("tower.scoreboard.deaths", stat(DEATHS))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.ratio", MathsUtils.round(stat(KILLS) / Math.max(1, stat(DEATHS)), 2))); i--;
 			objective.changeLine(i,  i18n("tower.scoreboard.marks", stat(MARKS))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.wins", stat(WINS))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.looses", stat(LOOSES))); i--;
 		}
 
 		for(int a=3;a<=i;a++)
@@ -91,19 +126,19 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 
 		objective.changeLine(2,  "&8&m----------------------");
 	}
-	
+
 	private String time(int time){
 		String res = "m";
 		int    sec = time % 60;
-		
+
 		res = (time / 60) + res;
 		if(sec < 10){
 			res += "0";
 		}
-		
+
 		return res + sec + "s";
 	}
-	
+
 	private int stat(String name){
 		return (int) player.getPlayerData().getStatistics("tower", name);
 	}
