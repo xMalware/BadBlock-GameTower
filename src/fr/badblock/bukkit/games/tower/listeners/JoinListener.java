@@ -5,7 +5,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -44,14 +43,6 @@ public class JoinListener extends BadListener {
 		e.getPlayer().teleport(PluginTower.getInstance().getMapConfiguration().getSpawnLocation());
 
 		new TowerScoreboard(e.getPlayer());
-	}
-	
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void onWeatherChange(WeatherChangeEvent event)
-	{
-		System.out.println(event.isCancelled());
-		System.out.println("WeatherChange");
-		event.setCancelled(false);
 	}
 
 	@EventHandler
