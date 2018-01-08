@@ -15,5 +15,6 @@ public class TowerConfiguration {
 	public int				   maxPlayersAutoTeam = 4;
 	public int    	   		   maxPlayersInTeam = 4;
 	public int    	   		   minPlayers		= 2;
+	public int    	   		   time				= 5;
 	public List<MapLocation>   spawn			= null;
 }

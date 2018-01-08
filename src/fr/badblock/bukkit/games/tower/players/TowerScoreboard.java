@@ -1,6 +1,10 @@
 package fr.badblock.bukkit.games.tower.players;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
@@ -25,8 +29,8 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 	private CustomObjective objective;
 	private BadblockPlayer  player;
 
-	private int totalRank;
-	private int monthRank;
+	private int totalRank	= -1;
+	private int monthRank	= -1;
 
 	public static boolean run = false;
 
@@ -94,35 +98,44 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 			{
 				gameName = "§6§lTower";
 			}
-			objective.setDisplayName("§6" + gameName + " §d>> §e" + time(StartRunnable.gameTask.getTime()));
+			objective.setDisplayName("§6" + gameName + " §d>> §b" + time(StartRunnable.gameTask.getTime()));
 		}
-		objective.changeLine(15, "&8&m----------------------");
+		objective.changeLine(16, "&8&m----------------------");
+		objective.changeLine(15, " ");
 
 		int i = 14;
 
-		objective.changeLine(i--, "");
-
+		int teams = 0;
 		for(BadblockTeam team : GameAPI.getAPI().getTeams()){
 			TowerTeamData data = team.teamData(TowerTeamData.class);
-			objective.changeLine(i, team.getChatName().getAsLine(player) + " §d(" + team.getOnlinePlayers().size() + ") §8> &7" + data.getMarks());
+			String prefix = "";
+			if (team.getOnlinePlayers().contains(player))
+			{
+				prefix += team.getColor() + "§l➔ ";
+			}
+			objective.changeLine(i, prefix + team.getChatName().getAsLine(player) + "§d(" + team.getOnlinePlayers().size() + ") §8> &b" + data.getMarks());
 			i--;
+			teams++;
 		}
 
 		if(player.getBadblockMode() != BadblockMode.SPECTATOR){
-			objective.changeLine(i,  ""); i--;
-
+			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(Locale.FRANCE);
+			NumberFormat goodNumberFormat = new DecimalFormat("###,##0.###", dfs);
+			objective.changeLine(i, " "); i--;
 			objective.changeLine(i,  i18n("tower.scoreboard.monthrank", monthRank)); i--;
 			objective.changeLine(i,  i18n("tower.scoreboard.totalrank", totalRank)); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.kills", stat(KILLS))); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.deaths", stat(DEATHS))); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.ratio", MathsUtils.round(stat(KILLS) / Math.max(1, stat(DEATHS)), 2))); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.marks", stat(MARKS))); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.wins", stat(WINS))); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.looses", stat(LOOSES))); i--;
+			objective.changeLine(i, " "); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.kills", goodNumberFormat.format(stat(KILLS)))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.deaths", goodNumberFormat.format(stat(DEATHS)))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.ratio", goodNumberFormat.format(MathsUtils.round((double) stat(KILLS) / (double) Math.max(1, (double) stat(DEATHS)), 2)))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.marks", goodNumberFormat.format(stat(MARKS)))); i--;
+			if (teams != 4)
+			{
+				objective.changeLine(i,  i18n("tower.scoreboard.wins", goodNumberFormat.format(stat(WINS)))); i--;
+				objective.changeLine(i,  i18n("tower.scoreboard.looses", goodNumberFormat.format(stat(LOOSES)))); i--;
+			}
 		}
 
-		for(int a=3;a<=i;a++)
-			objective.removeLine(a);
 
 		objective.changeLine(2,  "&8&m----------------------");
 	}

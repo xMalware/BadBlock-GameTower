@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class StartRunnable extends BukkitRunnable {
-	public static final int 		  TIME_BEFORE_START = 5;
+	public static final int 		  TIME_BEFORE_START = PluginTower.getInstance().getConfiguration().time;
 	public static     	StartRunnable task 		        = null;
 	public static    	GameRunnable  gameTask		    = null;
 
