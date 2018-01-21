@@ -1,10 +1,6 @@
 package fr.badblock.bukkit.games.tower.players;
 
 import java.io.File;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
@@ -16,6 +12,7 @@ import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.scoreboard.BadblockScoreboardGenerator;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.gameapi.utils.ColorConverter;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 
@@ -111,7 +108,7 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 			String prefix = "";
 			if (team.getOnlinePlayers().contains(player))
 			{
-				prefix += team.getColor() + "§l➔ ";
+				prefix += ColorConverter.dyeToChat(team.getDyeColor()) + "§l➔ ";
 			}
 			objective.changeLine(i, prefix + team.getChatName().getAsLine(player) + "§d(" + team.getOnlinePlayers().size() + ") §8> &b" + data.getMarks());
 			i--;
@@ -119,20 +116,18 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		}
 
 		if(player.getBadblockMode() != BadblockMode.SPECTATOR){
-			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(Locale.FRANCE);
-			NumberFormat goodNumberFormat = new DecimalFormat("###,##0.###", dfs);
 			objective.changeLine(i, " "); i--;
 			objective.changeLine(i,  i18n("tower.scoreboard.monthrank", monthRank)); i--;
 			objective.changeLine(i,  i18n("tower.scoreboard.totalrank", totalRank)); i--;
 			objective.changeLine(i, " "); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.kills", goodNumberFormat.format(stat(KILLS)))); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.deaths", goodNumberFormat.format(stat(DEATHS)))); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.ratio", goodNumberFormat.format(MathsUtils.round((double) stat(KILLS) / (double) Math.max(1, (double) stat(DEATHS)), 2)))); i--;
-			objective.changeLine(i,  i18n("tower.scoreboard.marks", goodNumberFormat.format(stat(MARKS)))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.kills", stat(KILLS))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.deaths", stat(DEATHS))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.ratio", MathsUtils.round((double) stat(KILLS) / (double) Math.max(1, (double) stat(DEATHS)), 2))); i--;
+			objective.changeLine(i,  i18n("tower.scoreboard.marks", stat(MARKS))); i--;
 			if (teams != 4)
 			{
-				objective.changeLine(i,  i18n("tower.scoreboard.wins", goodNumberFormat.format(stat(WINS)))); i--;
-				objective.changeLine(i,  i18n("tower.scoreboard.looses", goodNumberFormat.format(stat(LOOSES)))); i--;
+				objective.changeLine(i,  i18n("tower.scoreboard.wins", stat(WINS))); i--;
+				objective.changeLine(i,  i18n("tower.scoreboard.looses", stat(LOOSES))); i--;
 			}
 		}
 
