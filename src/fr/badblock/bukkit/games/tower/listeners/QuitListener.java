@@ -13,9 +13,8 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.rankeds.RankedCalc;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
-import fr.badblock.gameapi.utils.BukkitUtils;
+import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 
@@ -23,7 +22,7 @@ public class QuitListener extends BadListener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e){
 		PluginTower tower = PluginTower.getInstance();
-		if (StartRunnable.gameTask == null && BukkitUtils.getPlayers().size() - 1 < tower.getConfiguration().minPlayers) {
+		if (StartRunnable.gameTask == null && Bukkit.getOnlinePlayers().size() - 1 < tower.getConfiguration().minPlayers) {
 			StartRunnable.stopGame();
 			StartRunnable.time = StartRunnable.time > 30 ? StartRunnable.time : 30;
 		}
