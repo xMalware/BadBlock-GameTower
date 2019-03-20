@@ -10,6 +10,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 
 public class PreStartRunnable extends BukkitRunnable {
+	
 	@Override
 	public void run(){
 		if(StartRunnable.task != null){

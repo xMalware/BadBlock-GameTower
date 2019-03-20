@@ -1,16 +1,25 @@
 package fr.badblock.bukkit.games.tower.listeners;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
 
 import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.bukkit.games.tower.TowerAchievementList;
@@ -28,6 +37,7 @@ import fr.badblock.gameapi.events.fakedeaths.PlayerFakeRespawnEvent;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 
 public class DeathListener extends BadListener {
@@ -35,6 +45,68 @@ public class DeathListener extends BadListener {
 	public void onDeath(NormalDeathEvent e){
 		death(e, e.getPlayer(), null, e.getLastDamageCause());
 		e.setDeathMessage(GameMessages.deathEventMessage(e));
+	}
+
+	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = false)
+	public void onDamageCheck(EntityDamageByEntityEvent event)
+	{
+		work(event);
+	}
+	
+	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	public void onDamageCheckHighest(EntityDamageByEntityEvent event)
+	{
+		work(event);
+	}
+	
+
+	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	public void onDamageCheck(EntityDamageEvent event)
+	{
+		if (event.getEntity().getType() != EntityType.PLAYER)
+		{
+			return;
+		}
+		
+		if (event.getCause().equals(DamageCause.SUFFOCATION) || event.getCause().equals(DamageCause.FALLING_BLOCK)
+				|| event.getCause().equals(DamageCause.CONTACT))
+		{
+			event.setCancelled(true);
+			return;
+		}
+	}
+	
+	private void work(EntityDamageByEntityEvent event)
+	{
+		
+		BadblockPlayer damager = null;
+		
+		if (!event.getDamager().getType().equals(EntityType.PLAYER))
+		{
+			ProjectileSource entity = null;
+			if (event.getDamager() instanceof Projectile)
+			{
+				entity = ((Projectile) event.getDamager()).getShooter();
+			}
+			
+			if (entity == null || !(entity instanceof Player))
+			{
+				return;
+			}
+			
+			damager = (BadblockPlayer) entity;
+		}
+		else
+		{
+			damager = (BadblockPlayer) event.getDamager();
+		}
+
+		BadblockPlayer damaged = (BadblockPlayer) event.getEntity();
+		
+		if (damager.getTeam() != null && damaged.getTeam() != null && damager.getTeam().equals(damaged.getTeam()))
+		{
+			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler
@@ -51,7 +123,7 @@ public class DeathListener extends BadListener {
 			towerData.givenDamages += event.getDamage();
 		}
 	}
-	
+
 	@EventHandler
 	public void onDeath(FightingDeathEvent e){
 		death(e, e.getPlayer(), e.getKiller(), e.getLastDamageCause());
@@ -71,7 +143,7 @@ public class DeathListener extends BadListener {
 	public void onRespawn(PlayerFakeRespawnEvent e){
 		if (e.getPlayer().getOpenInventory() != null && e.getPlayer().getOpenInventory().getCursor() != null)
 			e.getPlayer().getOpenInventory().setCursor(null);
-		if (GameAPI.getServerName().startsWith("towerE_"))
+		if (GameAPI.getServerName().startsWith("towerf_"))
 		{
 			e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
 		}
@@ -95,10 +167,56 @@ public class DeathListener extends BadListener {
 		Location respawnPlace = null;
 		player.getPlayerData().incrementStatistic("tower", TowerScoreboard.DEATHS);
 		player.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.DEATHS, 1);
-		player.inGameData(TowerData.class).deaths++;
+		TowerData victimData = player.inGameData(TowerData.class);
+		victimData.deaths++;
+
+		int tValid = 0;
+		for (long l : victimData.lastKills.values())
+		{
+			if (l > System.currentTimeMillis())
+			{
+				tValid++;
+			}
+		}
+
+		if (tValid >= 3)
+		{
+			final int finalValid = tValid;
+			if(killer != null)
+			{
+				Sound sound = tValid == 2 ? Sound.ZOMBIE_IDLE : tValid == 3 ? Sound.ZOMBIE_PIG_ANGRY :
+					tValid == 4 ? Sound.HORSE_ANGRY : tValid == 5 ? Sound.DONKEY_ANGRY : Sound.ENDERMAN_SCREAM;
+				BukkitUtils.forEachPlayers(plo -> player.sendTranslatedMessage("game.killserie.stopped", player.getName(), finalValid, killer.getName()));
+				BukkitUtils.forEachPlayers(plo -> player.playSound(sound));
+			}
+			else
+			{
+				BukkitUtils.forEachPlayers(plo -> player.sendTranslatedMessage("game.killserie.stoppeddeath", player.getName(), finalValid));
+			}
+		}
+
+		victimData.lastKills.clear();
 		player.getCustomObjective().generate();
 
 		e.setLightning(true);
+
+		if (TowerScoreboard.run)
+		{
+			if (e.getDrops() != null)
+			{
+				Iterator<ItemStack> iterator = e.getDrops().iterator();
+				while (iterator.hasNext())
+				{
+					ItemStack item = iterator.next();
+
+					if (!Material.GOLDEN_APPLE.equals(item.getType()))
+					{
+						iterator.remove();
+					}
+				}
+			}
+		}
+
 		respawnPlace = player.getTeam().teamData(TowerTeamData.class).getRespawnLocation();
 
 		if(killer != null){
@@ -111,7 +229,39 @@ public class DeathListener extends BadListener {
 			BadblockPlayer bKiller = (BadblockPlayer) killer;
 			bKiller.getPlayerData().incrementStatistic("tower", TowerScoreboard.KILLS);
 			bKiller.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), TowerScoreboard.KILLS, 1);
-			bKiller.inGameData(TowerData.class).kills++;
+			TowerData data = bKiller.inGameData(TowerData.class);
+			data.kills++;
+
+			if (!data.lastKills.containsKey(player.getName()) || data.lastKills.get(player.getName()) < System.currentTimeMillis())
+			{
+				bKiller.inGameData(TowerData.class).lastKills.put(player.getName(), System.currentTimeMillis() + 8000);
+
+				int valid = 0;
+				for (long l : data.lastKills.values())
+				{
+					if (l > System.currentTimeMillis())
+					{
+						valid++;
+					}
+				}
+
+				if (valid > 1)
+				{
+					final int finalValid = valid;
+
+					String killName = valid == 2 ? "double" : valid == 3 ? "triple" : valid == 4 ? "quadruple" : valid == 5 ?
+							"quintuple" : valid == 6 ? "sextuple" : valid == 7 ? "septuple" : valid == 8 ? "octuple" : valid == 9 ? "nonuple":
+								valid == 10 ? "decuple" : "extra";
+					Sound sound = valid == 2 ? Sound.ZOMBIE_IDLE : valid == 3 ? Sound.ZOMBIE_PIG_ANGRY :
+						valid == 4 ? Sound.HORSE_ANGRY : valid == 5 ? Sound.DONKEY_ANGRY : Sound.ENDERMAN_SCREAM;
+					BukkitUtils.forEachPlayers(plo -> player.sendTranslatedMessage("game.killserie." + killName, bKiller.getName(), finalValid));
+					BukkitUtils.forEachPlayers(plo -> player.playSound(sound));
+				}
+			}
+			else
+			{
+				data.lastKills.put(player.getName(), System.currentTimeMillis() + 120000);
+			}
 
 			bKiller.getCustomObjective().generate();
 		}

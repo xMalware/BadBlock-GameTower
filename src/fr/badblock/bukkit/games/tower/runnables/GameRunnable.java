@@ -2,15 +2,19 @@ package fr.badblock.bukkit.games.tower.runnables;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.badblock.bukkit.games.tower.PluginTower;
@@ -26,6 +30,7 @@ import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.game.rankeds.RankedCalc;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
+import fr.badblock.gameapi.particles.ParticleEffectType;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
@@ -40,19 +45,26 @@ import lombok.Getter;
 public class GameRunnable extends BukkitRunnable {
 	//public static final int MAX_TIME = 60 * 60 * 24;
 
+	public static Map<BadblockPlayer, Location> freezeOnBlocks = new HashMap<>();
+
 	public boolean forceEnd 		 = false;
 	@Getter
 	private int    time 			 = 0;
+
+	public long beacon = 0L;
 
 	public GameRunnable(TowerMapConfiguration config){
 		GameAPI.getAPI().getGameServer().setGameState(GameState.RUNNING);
 		GameAPI.getAPI().getGameServer().saveTeamsAndPlayersForResult();
 
-		new ItemSpawnRunnable(Material.IRON_INGOT, 60, PluginTower.getInstance().getMapConfiguration().getIron()).start();
-		new ItemSpawnRunnable(Material.DIAMOND, 800, PluginTower.getInstance().getMapConfiguration().getIron()).start();
-		new ItemSpawnRunnable(Material.EXP_BOTTLE, 30, PluginTower.getInstance().getMapConfiguration().getXpbottle()).start();
+		if (config != null && config.getIron() != null && config.getXpbottle() != null)
+		{
+			new ItemSpawnRunnable(Material.IRON_INGOT, 60, config.getIron()).start();
+			new ItemSpawnRunnable(Material.DIAMOND, 800, config.getIron()).start();
+			new ItemSpawnRunnable(Material.EXP_BOTTLE, 30, config.getXpbottle()).start();
+		}
 
-		if (!PluginTower.getInstance().getMapConfiguration().getAllowBows()) {
+		if (config != null && !config.getAllowBows()) {
 			remove(Material.BOW);
 			remove(Material.ARROW);
 		}
@@ -63,13 +75,35 @@ public class GameRunnable extends BukkitRunnable {
 
 		for(BadblockTeam team : GameAPI.getAPI().getTeams()){
 
-			Location location = team.teamData(TowerTeamData.class).getRespawnLocation();
-			location.getChunk().load();
-
 			for(BadblockPlayer p : team.getOnlinePlayers()){
 				JoinListener.handle(p);
-			}
 
+				if (team != null)
+				{
+					Location location = team.teamData(TowerTeamData.class).getRespawnLocation();
+					Location f = null;
+
+					int max = 10;
+					int i = 0;
+
+					while (i < max)
+					{
+						i++;
+						Location l = location.clone().add(0, -i, 0);
+
+						if (!l.getBlock().getType().equals(Material.AIR))
+						{
+							break;
+						}
+
+						f = l;
+					}
+
+					location = f;
+
+					freezeOnBlocks.put(p, location);
+				}
+			}
 		}
 
 		GameAPI.getAPI().getJoinItems().doClearInventory(false);
@@ -91,6 +125,25 @@ public class GameRunnable extends BukkitRunnable {
 
 	@Override
 	public void run() {
+		if (time == 0)
+		{
+			for (Player player : Bukkit.getOnlinePlayers())
+			{
+				BadblockPlayer bPlayer = (BadblockPlayer) player;
+
+				bPlayer.sendTitle("§a§lGo!", "");
+				bPlayer.sendTimings(0, 30, 0);
+			}
+
+			freezeOnBlocks.clear();
+			for(Player player : Bukkit.getOnlinePlayers()){
+				BadblockPlayer bPlayer = (BadblockPlayer) player;
+				bPlayer.sendParticle(bPlayer.getLocation(), GameAPI.getAPI().createParticleEffect(ParticleEffectType.EXPLOSION_NORMAL));
+				bPlayer.removePotionEffect(PotionEffectType.BLINDNESS);
+				bPlayer.playSound(Sound.EXPLODE);
+			}
+		}
+
 		time++;
 		GameAPI.setJoinable(time > 900);
 
@@ -249,11 +302,11 @@ public class GameRunnable extends BukkitRunnable {
 			{
 				pl.sendMessage(" ");
 				String mDamager = mostDamager == null ? pl.getTranslatedMessage("tower.infos.damager_no")[0] :
-						pl.getTranslatedMessage("tower.infos.damager", mostDamager.getKey(), MathsUtils.round(mostDamager.getValue(), 2))[0];
+					pl.getTranslatedMessage("tower.infos.damager", mostDamager.getKey(), MathsUtils.round(mostDamager.getValue(), 2))[0];
 				String mDeath = mostDeath == null ? pl.getTranslatedMessage("tower.infos.death_no")[0] :
-						pl.getTranslatedMessage("tower.infos.death", mostDeath.getKey(), mostDeath.getValue())[0];
+					pl.getTranslatedMessage("tower.infos.death", mostDeath.getKey(), mostDeath.getValue())[0];
 				String mObjective = mostObjective == null ? pl.getTranslatedMessage("tower.infos.objective_no")[0] :
-						pl.getTranslatedMessage("tower.infos.objective", mostObjective.getKey(), mostObjective.getValue())[0];
+					pl.getTranslatedMessage("tower.infos.objective", mostObjective.getKey(), mostObjective.getValue())[0];
 				pl.sendMessage(mDamager);
 				pl.sendMessage(mDeath);
 				pl.sendMessage(mObjective);
@@ -268,6 +321,14 @@ public class GameRunnable extends BukkitRunnable {
 			cancel();
 			Bukkit.shutdown();
 			return;
+		}
+		else if (PluginTower.getInstance().getMapConfiguration() != null && PluginTower.getInstance().getMapConfiguration().getLottery().booleanValue())
+		{
+			if (beacon < System.currentTimeMillis())
+			{
+				BukkitUtils.getAllPlayers().forEach(player -> player.sendTranslatedMessage("tower.lottery_available"));
+				beacon = System.currentTimeMillis() + 300_000L;
+			}
 		}
 
 	}

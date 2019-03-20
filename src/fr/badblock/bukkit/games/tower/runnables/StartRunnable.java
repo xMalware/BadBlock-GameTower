@@ -25,67 +25,79 @@ public class StartRunnable extends BukkitRunnable {
 
 	public static int time	= TIME_BEFORE_START;
 	
+	public static TowerMapConfiguration config;
+
 	@Override
 	public void run() {
-		GameAPI.setJoinable(time >= 5);
+		GameAPI.setJoinable(time >= 10);
 		if(time == 0){
 			for(Player player : Bukkit.getOnlinePlayers()){
 				BadblockPlayer bPlayer = (BadblockPlayer) player;
 				bPlayer.playSound(Sound.ORB_PICKUP);
 			}
-			
-			String winner = GameAPI.getAPI().getBadblockScoreboard().getWinner().getInternalName();
-			File   file   = new File(PluginTower.MAP, winner + ".json");
-			
-			TowerMapConfiguration config = new TowerMapConfiguration(GameAPI.getAPI().loadConfiguration(file));
-			config.save(file);
-			PluginTower.getInstance().setMapConfiguration(config);
-			GameAPI.getAPI().balanceTeams(true);
-			
-			gameTask = new GameRunnable(config);
-			gameTask.runTaskTimer(GameAPI.getAPI(), 0, 20L);
-			
+
 			cancel();
-		} else if(time % 10 == 0 || time <= 5){
+		} else if(time % 10 == 0 || time <= 5 || time == 15){
 			sendTime(time);
 		}
-		
-		if(time == 3){
+
+		if (time == 4)
+		{
+			GameAPI.getAPI().balanceTeams(true);
 			GameAPI.getAPI().getBadblockScoreboard().endVote();
 			
 			for(Player player : Bukkit.getOnlinePlayers()){
 				new TowerScoreboard((BadblockPlayer) player);
 			}
+			
+			String winner = GameAPI.getAPI().getBadblockScoreboard().getWinner().getInternalName();
+			File   file   = new File(PluginTower.MAP, winner + ".json");
+
+			TowerMapConfiguration tmpConfig = new TowerMapConfiguration(GameAPI.getAPI().loadConfiguration(file));
+			tmpConfig.save(file);
+			PluginTower.getInstance().setMapConfiguration(tmpConfig);
+			
+			config = tmpConfig;
+
+			gameTask = new GameRunnable(config);
+			gameTask.runTaskTimer(GameAPI.getAPI(), 3 * 20L, 20L);
 		}
-		
+
 		sendTimeHidden(time);
-		
+
 		time--;
+	}
+
+	protected void start(int t){
+		time = t;
+		
+		sendTime(time);
+
+		runTaskTimer(GameAPI.getAPI(), 0, 20L);
 	}
 	
 	protected void start(){
-		sendTime(time);
-		
-		runTaskTimer(GameAPI.getAPI(), 0, 20L);
+		start(time);
 	}
 
 	private void sendTime(int time){
 		ChatColor color = getColor(time);
-		TranslatableString title = GameMessages.startIn(time, color);
-		
+
 		for(Player player : Bukkit.getOnlinePlayers()){
 			BadblockPlayer bPlayer = (BadblockPlayer) player;
 
 			bPlayer.playSound(Sound.NOTE_PLING);
-			bPlayer.sendTranslatedTitle(title.getKey(), title.getObjects());
-			bPlayer.sendTimings(2, 30, 2);
+
+			bPlayer.sendTranslatedMessage("tower.startingtimeleft", color + ""  + time, time > 1 ? "s" : "");
+			bPlayer.sendTitle(color + "" + ChatColor.BOLD + "" + time, "");
+			bPlayer.sendTimings(0, 20 * 5, 0);
 		}
 	}
-	
+
 	private void sendTimeHidden(int time){
 		ChatColor color = getColor(time);
 		TranslatableString actionbar = GameMessages.startInActionBar(time, color);
-		
+
 		for(Player player : Bukkit.getOnlinePlayers()){
 			BadblockPlayer bPlayer = (BadblockPlayer) player;
 
@@ -95,7 +107,7 @@ public class StartRunnable extends BukkitRunnable {
 			bPlayer.setExp(0.0f);
 		}
 	}
-	
+
 	private ChatColor getColor(int time){
 		if(time == 1)
 			return ChatColor.DARK_RED;
@@ -105,14 +117,22 @@ public class StartRunnable extends BukkitRunnable {
 	}
 
 	public static void joinNotify(int currentPlayers, int maxPlayers){
-		if(currentPlayers + 1 < PluginTower.getInstance().getMinPlayers()) return;
-		
+		if ((!GameAPI.getAPI().isHostedGame() && currentPlayers + 1 < PluginTower.getInstance().getMinPlayers())
+				|| (GameAPI.getAPI().isHostedGame() && currentPlayers + 1 < PluginTower.getInstance().getMaxPlayers())) return;
+
 		startGame();
-		int t = 5;
+		int t = 30;
 		if (time >= t && (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() || 
 				(PluginTower.getInstance().getConfiguration().enabledAutoTeamManager && Bukkit.getOnlinePlayers().size() 
 						>= PluginTower.getInstance().getConfiguration().maxPlayersAutoTeam * PluginTower.getInstance().getAPI().getTeams().size()))) {
 			time = t;
+		}
+	}
+
+	public static void startGame(int t){
+		if(task == null){
+			task = new StartRunnable();
+			task.start(t);
 		}
 	}
 	
@@ -122,21 +142,21 @@ public class StartRunnable extends BukkitRunnable {
 			task.start();
 		}
 	}
-	
+
 	public static void stopGame(){
 		if(gameTask != null){
 			gameTask.forceEnd = true;
 			time = TIME_BEFORE_START;
 		} else if(task != null){
 			task.cancel();
-			time = time > 5 ? time : 5;
+			time = time > 15 ? time : 15;
 			GameAPI.setJoinable(true);
 		}
-		
+
 		task = null;
 		gameTask = null;
 	}
-	
+
 	public static boolean started(){
 		return task != null;
 	}

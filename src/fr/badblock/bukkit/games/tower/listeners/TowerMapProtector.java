@@ -1,27 +1,41 @@
 package fr.badblock.bukkit.games.tower.listeners;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.block.Action;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.badblock.bukkit.games.tower.PluginTower;
+import fr.badblock.bukkit.games.tower.configuration.TowerMapConfiguration;
+import fr.badblock.bukkit.games.tower.configuration.TowerMapConfiguration.MapCustomEnchantment;
+import fr.badblock.bukkit.games.tower.configuration.TowerMapConfiguration.MapCustomRecipeResult;
 import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
 import fr.badblock.bukkit.games.tower.players.TowerScoreboard;
+import fr.badblock.bukkit.games.tower.runnables.StartRunnable;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.servers.MapProtector;
+import fr.badblock.gameapi.utils.BukkitUtils;
 
 public class TowerMapProtector implements MapProtector {
+
+	public static BukkitTask lottery;
+
 	private boolean inGame(){
 		return GameAPI.getAPI().getGameServer().getGameState() == GameState.RUNNING;
 	}
@@ -56,14 +70,25 @@ public class TowerMapProtector implements MapProtector {
 	@Override
 	public boolean blockBreak(BadblockPlayer player, Block block) {
 		if (player.hasAdminMode()) return true;
+
+		if (block.getType().equals(Material.BEACON))
+		{
+			return false;
+		}
+
 		if (block != null && block.getType() != null && (block.getType().equals(Material.CHEST) || block.getType().equals(Material.TRAPPED_CHEST) || block.getType().equals(Material.ENDER_CHEST))) return false;
 		if(inGame() && block != null){
 
 			for(BadblockTeam team : GameAPI.getAPI().getTeams()){
-				if(team.teamData(TowerTeamData.class).getSpawnzone().isInSelection(block)){
+				if (team.teamData(TowerTeamData.class).getSpawnzone().isInSelection(block))
+				{
+					/*if (!JoinListener.placedTotalBlocks.containsKey(block.getLocation()))
+					{*/
+						return player.hasAdminMode();
+					//}
+				}
+				else if(block.getType() == Material.CHEST){
 					return player.hasAdminMode();
-				} else if(block.getType() == Material.CHEST && team.teamData(TowerTeamData.class).getTeamzone().isInSelection(block)){
-					return player.hasAdminMode() || team.equals(player.getTeam());
 				}
 			}
 
@@ -79,7 +104,7 @@ public class TowerMapProtector implements MapProtector {
 
 	@Override
 	public boolean canLostFood(BadblockPlayer player) {
-		return inGame();
+		return inGame() && !TowerScoreboard.run;
 	}
 
 	@Override
@@ -124,8 +149,121 @@ public class TowerMapProtector implements MapProtector {
 			}
 
 		}
+		else if (block != null && block.getType().equals(Material.BEACON) && action.name().contains("CLICK_BLOCK"))
+		{
+			if (PluginTower.getInstance().getMapConfiguration() != null && PluginTower.getInstance().getMapConfiguration().getLottery().booleanValue())
+			{
+				if (StartRunnable.gameTask.beacon > System.currentTimeMillis())
+				{
+					long diff = System.currentTimeMillis() - StartRunnable.gameTask.beacon;
+					int d = (int) (diff / 1000);
+					player.sendTranslatedMessage("tower.lottery_pleasewait", TowerScoreboard.time(d));
+					return false;
+				}
+
+				if (lottery != null)
+				{
+					player.sendTranslatedMessage("tower.lottery_alreadyinuse");
+					return false;
+				}
+
+				lottery = Bukkit.getScheduler().runTaskTimer(PluginTower.getInstance(), new Runnable()
+				{
+
+					private int ticks = 0;
+
+					@Override
+					public void run()
+					{
+						if (!player.isOnline())
+						{
+							lottery.cancel();
+							lottery = null;
+							return;
+						}
+
+						if (!player.getWorld().equals(block.getWorld()) || player.getLocation().distance(block.getLocation()) < 5)
+						{
+							player.sendTranslatedMessage("tower.lottery_toofar");
+							lottery.cancel();
+							lottery = null;
+						}
+
+						if (ticks >= 100)
+						{
+							player.playSound(Sound.EAT);
+							player.sendTranslatedMessage("tower.lottery_given");
+							BukkitUtils.getAllPlayers().forEach(p -> p.sendTranslatedMessage("tower.lottery_broadcast", player.getTabGroupPrefix().getAsLine(p) + player.getName()));
+							StartRunnable.gameTask.beacon = System.currentTimeMillis() + 300_000L;
+
+							TowerMapConfiguration c = PluginTower.getInstance().getMapConfiguration();
+
+							HashSet<MapCustomRecipeResult> l = new HashSet<>();
+
+							for (int i = 0; i < c.getBeaconItemCount(); i++)
+							{
+								int rt = c.getBeacons().stream().filter(t -> !l.contains(t)).mapToInt(u -> u.getProbability()).sum();
+								int rand = new Random().nextInt(rt);
+								int index = 0;
+								MapCustomRecipeResult result = null;
+
+								for (MapCustomRecipeResult r : c.getBeacons())
+								{
+									if (l.contains(r))
+									{
+										continue;
+									}
+
+									index += r.getProbability();
+
+									if (rand <= index)
+									{
+										result = r;
+									}
+								}
+
+								if (result != null)
+								{
+									Material material = getFrom(result.getName());
+									ItemStack item = new ItemStack(material, result.getAmount(), (byte) result.getData());
+
+									for (MapCustomEnchantment e : result.getEnchantments())
+									{
+										item.addEnchantment(e.toEnchantment(), e.getLevel());
+									}
+
+									player.getInventory().addItem(item);
+								}
+
+							}
+
+							lottery.cancel();
+							lottery = null;
+							return;
+						}
+
+						ticks++;
+					}
+				}, 1, 1);
+
+				return false;
+			}
+		}
 
 		return inGame() || player.hasAdminMode();
+	}
+
+	private static Material getFrom(String raw)
+	{
+		for (Material material : Material.values())
+		{
+			if (material.name().equalsIgnoreCase(raw))
+			{
+				return material;
+			}
+		}
+
+		return null;
 	}
 
 	@Override

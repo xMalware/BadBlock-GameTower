@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import fr.badblock.bukkit.games.tower.PluginTower;
 import fr.badblock.bukkit.games.tower.entities.TowerTeamData;
+import fr.badblock.bukkit.games.tower.runnables.GameRunnable;
+import fr.badblock.bukkit.games.tower.runnables.StartRunnable;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -18,6 +20,17 @@ import fr.badblock.gameapi.players.BadblockTeam;
 public class MoveListener extends BadListener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent e){
+		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+		
+		if (StartRunnable.time <= 3 && GameRunnable.freezeOnBlocks.containsKey(player))
+		{
+			if (!GameRunnable.freezeOnBlocks.get(player).getBlock().equals(e.getTo().getBlock()))
+			{
+				e.setTo(GameRunnable.freezeOnBlocks.get(player));
+			}
+			return;
+		}
+		
 		if(e.getTo().getY() <= 0.0d && !inGame()){
 			Location spawn = PluginTower.getInstance().spawn.getHandle();
 
@@ -35,7 +48,6 @@ public class MoveListener extends BadListener {
 			if(vehicle != null)
 				vehicle.setPassenger(e.getPlayer());
 		}else if(e.getTo().getY() <= 0.0d && inGame()){
-			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 			if (player.getBadblockMode().equals(BadblockMode.PLAYER)) {
 				@SuppressWarnings("deprecation")
 				EntityDamageEvent event = new EntityDamageEvent(player, EntityDamageEvent.DamageCause.VOID, player.getHealth());
@@ -43,8 +55,6 @@ public class MoveListener extends BadListener {
 				Bukkit.getServer().getPluginManager().callEvent(event);
 			}
 		} else if(inGame()){
-			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-
 			if(player.getTeam() == null || player.getBadblockMode() != BadblockMode.PLAYER) return;
 
 			for(BadblockTeam team : GameAPI.getAPI().getTeams()){

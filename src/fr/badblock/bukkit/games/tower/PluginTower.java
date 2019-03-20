@@ -3,10 +3,13 @@ package fr.badblock.bukkit.games.tower;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -15,6 +18,7 @@ import fr.badblock.bukkit.games.tower.commands.TowerCommand;
 import fr.badblock.bukkit.games.tower.configuration.TowerConfiguration;
 import fr.badblock.bukkit.games.tower.configuration.TowerMapConfiguration;
 import fr.badblock.bukkit.games.tower.listeners.DeathListener;
+import fr.badblock.bukkit.games.tower.listeners.HostListener;
 import fr.badblock.bukkit.games.tower.listeners.JoinListener;
 import fr.badblock.bukkit.games.tower.listeners.MoveListener;
 import fr.badblock.bukkit.games.tower.listeners.PartyJoinListener;
@@ -133,6 +137,15 @@ public class PluginTower extends BadblockPlugin {
 			JsonUtils.save(configFile, configuration, true);
 
 			spawn = configuration.spawn.get(new Random().nextInt(configuration.spawn.size()));
+			
+			HashSet<Chunk> chunks = new HashSet<>();
+			int radius = 64;
+			for (int x = -radius; x < radius; x++)
+				for (int z = -radius; z < radius; z++)
+				{
+					Location location = spawn.getHandle().clone().add(x, 0, z);
+					chunks.add(location.getChunk());
+				}
 
 			File 			  teamsFile 	= new File(getDataFolder(), TEAMS_CONFIG);
 			FileConfiguration teams 		= YamlConfiguration.loadConfiguration(teamsFile);
@@ -169,60 +182,12 @@ public class PluginTower extends BadblockPlugin {
 			getAPI().getBadblockScoreboard().doOnDamageHologram();
 
 			getAPI().formatChat(true, true);
-			//ItemStackFactory item = GameAPI.getAPI().createItemStackFactory().displayName(new TranslatableString("vote.bowinventory")).type(Material.BOW);
-			/*getAPI().getJoinItems().registerCustomItem(1, item, new ItemEvent() {
+			
+			String text = "";
 
-				@Override
-				public boolean call(ItemAction action, BadblockPlayer player) {
-					CustomInventory inventory = GameAPI.getAPI().createCustomInventory(kits.size() / 9, GameAPI.i18n().get(player, "vote.bowinventory")[0]);
-					int yes = 0;
-					int no = 0;
-					for (boolean bool : bow.values())
-						if (bool) yes++;
-						else no++;
-					inventory.addClickableItem(0, GameAPI.getAPI().createItemStackFactory()
-					.type(Material.BOW)
-					.displayName(GameAPI.getAPI().getI18n().get(player.getPlayerData().getLocale(), "vote.bowyes")[0])
-					.lore(new TranslatableString("vote.bowvotes", yes))
-					.asExtra(1).listenAs(new ItemEvent(){
-						@Override
-						public boolean call(ItemAction action, BadblockPlayer player) {
-							if (bow.containsKey(player.getName())) {
-								boolean bool = bow.get(player.getName());
-								if (bool) {
-									player.sendTranslatedMessage("vote.bowalready");
-									return true;
-								}
-							}
-							bow.put(player.getName(), true);
-							player.sendTranslatedMessage("vote.bowvoted", player.getTranslatedMessage("vote.bowvotedyes")[0]);
-							return true;
-						}
-					}, ItemPlaces.INVENTORY_CLICKABLE));
-					inventory.addClickableItem(1, GameAPI.getAPI().createItemStackFactory()
-					.type(Material.BOW)
-					.displayName(GameAPI.getAPI().getI18n().get(player.getPlayerData().getLocale(), "vote.bowno")[0])
-					.lore(new TranslatableString("vote.bowvotes", no))
-					.asExtra(1).listenAs(new ItemEvent(){
-						@Override
-						public boolean call(ItemAction action, BadblockPlayer player) {
-							if (bow.containsKey(player.getName())) {
-								boolean bool = bow.get(player.getName());
-								if (!bool) {
-									player.sendTranslatedMessage("vote.bowalready");
-									return true;
-								}
-							}
-							bow.put(player.getName(), false);
-							player.sendTranslatedMessage("vote.bowvoted", player.getTranslatedMessage("vote.bowvotedno")[0]);
-							return true;
-						}
-					}, ItemPlaces.INVENTORY_CLICKABLE));
-					inventory.openInventory(player);
-					return true;
-				}
-
-			});*/
+			text = text.replace("·ice", "");
+			text = text.replace("·e", "");
+			
 			getAPI().getJoinItems().registerKitItem(0, kits, new File(getDataFolder(), KITS_CONFIG_INVENTORY));
 			getAPI().getJoinItems().registerTeamItem(3, new File(getDataFolder(), TEAMS_CONFIG_INVENTORY));
 			getAPI().getJoinItems().registerAchievementsItem(4, BadblockGame.TOWER);
@@ -236,7 +201,7 @@ public class PluginTower extends BadblockPlugin {
 			}
 			//getAPI().enableAntiBowSpam(500);
 
-			getAPI().getGameServer().whileRunningConnection(WhileRunningConnectionTypes.SPECTATOR);
+			getAPI().getGameServer().whileRunningConnection(WhileRunningConnectionTypes.BACKUP);
 
 			new MoveListener();
 			new DeathListener();
@@ -244,6 +209,7 @@ public class PluginTower extends BadblockPlugin {
 			new QuitListener();
 			new PartyJoinListener();
 			new PlayerMountListener();		// G�re les moutons en d�but de partie :3
+			new HostListener();
 
 			File votesFile = new File(getDataFolder(), VOTES_CONFIG);
 
