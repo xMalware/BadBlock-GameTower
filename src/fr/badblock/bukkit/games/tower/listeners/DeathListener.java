@@ -186,12 +186,12 @@ public class DeathListener extends BadListener {
 			{
 				Sound sound = tValid == 2 ? Sound.ZOMBIE_IDLE : tValid == 3 ? Sound.ZOMBIE_PIG_ANGRY :
 					tValid == 4 ? Sound.HORSE_ANGRY : tValid == 5 ? Sound.DONKEY_ANGRY : Sound.ENDERMAN_SCREAM;
-				BukkitUtils.forEachPlayers(plo -> player.sendTranslatedMessage("game.killserie.stopped", player.getName(), finalValid, killer.getName()));
-				BukkitUtils.forEachPlayers(plo -> player.playSound(sound));
+				BukkitUtils.forEachPlayers(plo -> plo.sendTranslatedMessage("game.killserie.stopped", player.getName(), finalValid, killer.getName()));
+				BukkitUtils.forEachPlayers(plo -> plo.playSound(sound));
 			}
 			else
 			{
-				BukkitUtils.forEachPlayers(plo -> player.sendTranslatedMessage("game.killserie.stoppeddeath", player.getName(), finalValid));
+				BukkitUtils.forEachPlayers(plo -> plo.sendTranslatedMessage("game.killserie.stoppeddeath", player.getName(), finalValid));
 			}
 		}
 
@@ -254,8 +254,8 @@ public class DeathListener extends BadListener {
 								valid == 10 ? "decuple" : "extra";
 					Sound sound = valid == 2 ? Sound.ZOMBIE_IDLE : valid == 3 ? Sound.ZOMBIE_PIG_ANGRY :
 						valid == 4 ? Sound.HORSE_ANGRY : valid == 5 ? Sound.DONKEY_ANGRY : Sound.ENDERMAN_SCREAM;
-					BukkitUtils.forEachPlayers(plo -> player.sendTranslatedMessage("game.killserie." + killName, bKiller.getName(), finalValid));
-					BukkitUtils.forEachPlayers(plo -> player.playSound(sound));
+					BukkitUtils.forEachPlayers(plo -> plo.sendTranslatedMessage("game.killserie." + killName, bKiller.getName(), finalValid));
+					BukkitUtils.forEachPlayers(plo -> plo.playSound(sound));
 				}
 			}
 			else
