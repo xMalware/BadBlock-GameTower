@@ -84,7 +84,7 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 			{
 				gameName = "Tower";
 			}
-			objective.setDisplayName("§l§6» §b§l" + gameName + " §l§6«");
+			objective.setDisplayName("§l§6§ §b§l" + gameName + " §l§6§");
 		}
 
 		int i = 16;
@@ -104,25 +104,25 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		String groupColor = player.getGroupPrefix().getAsLine(player);
 		groupColor = groupColor.replace(ChatColor.stripColor(groupColor), "");
 		i--;
-		objective.changeLine(i, "§6┌ " + groupColor + "§n§l" + player.getName());
+		objective.changeLine(i, "§6 " + groupColor + "§n§l" + player.getName());
 		i--;
-		objective.changeLine(i, "§6│");
+		objective.changeLine(i, "§6 ");
 		i--;
-		objective.changeLine(i, "§6├§a§l Rang: §6" + player.getGroupPrefix().getAsLine(player));
+		objective.changeLine(i, "§6§a§l Rang: §6" + player.getGroupPrefix().getAsLine(player));
 		i--;
-		objective.changeLine(i, "§6├§a§l Niveau: §6" + player.getPlayerData().getLevel());
+		objective.changeLine(i, "§6§a§l Niveau: §6" + player.getPlayerData().getLevel());
 		i--;
 		if (monthRank == -1)
 		{
-			objective.changeLine(i, "§6├§a§l Classement: §6?");
+			objective.changeLine(i, "§6§a§l Classement: §6?");
 		}
 		else
 		{
-			objective.changeLine(i, "§6├§a§l Classement: §6" + monthRank + "ème");
+			objective.changeLine(i, "§6§a§l Classement: §6" + monthRank + " ");
 
 		}
 		i--;
-		objective.changeLine(i, "§6│");
+		objective.changeLine(i, "§6 ");
 		i--;
 		BadblockTeam currentTeam = player.getTeam();
 		String teamName = "§7Inconnu";
@@ -130,31 +130,31 @@ public class TowerScoreboard extends BadblockScoreboardGenerator {
 		{
 			teamName = currentTeam.getChatPrefix().getAsLine(player);
 		}
-		objective.changeLine(i, "§6├§b§l Map: §6" + GameAPI.getAPI().getBadblockScoreboard().getWinner().getDisplayName());
+		objective.changeLine(i, "§6§b§l Map: §6" + GameAPI.getAPI().getBadblockScoreboard().getWinner().getDisplayName());
 		i--;
-		objective.changeLine(i, "§6├§b§l Points maximum: §6" + PluginTower.getInstance().getConfiguration().neededPoints);
+		objective.changeLine(i, "§6§b§l Points maximum: §6" + PluginTower.getInstance().getConfiguration().neededPoints);
 		i--;
-		objective.changeLine(i, "§6├§b§l Équipe: " + teamName);
+		objective.changeLine(i, "§6§b§l Equipe: " + teamName);
 		i--;
 		if (StartRunnable.gameTask != null)
 		{
-			objective.changeLine(i, "§6├§b§l En cours: §6" + time(StartRunnable.gameTask.getTime()));
+			objective.changeLine(i, "§6§b§l En cours: §6" + time(StartRunnable.gameTask.getTime()));
 		}
 		else
 		{
-			objective.changeLine(i, "§6├§b§l Lancement...");
+			objective.changeLine(i, "§6§b§l Lancement...");
 		}
 		i--;
-		objective.changeLine(i, "§6│  ");
+		objective.changeLine(i, "§6  ");
 		i--;
 		for(BadblockTeam team : GameAPI.getAPI().getTeams()){
 			TowerTeamData data = team.teamData(TowerTeamData.class);
-			objective.changeLine(i, "§6├§b Team " + team.getChatName().getAsLine(player) + "§e> §a" + data.getMarks() + "pts");
+			objective.changeLine(i, "§6§b Team " + team.getChatName().getAsLine(player) + "§e> §a" + data.getMarks() + "pts");
 			i--;
 		}
-		objective.changeLine(i, "§6│");
+		objective.changeLine(i, "§6 ");
 		i--;
-		objective.changeLine(i, "§6└ " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "IP: play.badblock.fr");
+		objective.changeLine(i, "§6 " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "IP: play.badblock.fr");
 		i--;
 	}
 

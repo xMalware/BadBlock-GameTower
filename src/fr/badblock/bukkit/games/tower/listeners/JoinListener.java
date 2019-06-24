@@ -308,7 +308,7 @@ public class JoinListener extends BadListener {
 		if(good){
 			PlayerAchievementState state = player.getPlayerData().getAchievementState(TowerAchievementList.TOWER_ALLKITS);
 
-			if(!state.isSucceeds()){
+			if(state != null && !state.isSucceeds()){
 				state.succeed();
 				TowerAchievementList.TOWER_ALLKITS.reward(player);
 			}

@@ -52,13 +52,13 @@ public class DeathListener extends BadListener {
 	{
 		work(event);
 	}
-	
+
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onDamageCheckHighest(EntityDamageByEntityEvent event)
 	{
 		work(event);
 	}
-	
+
 
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onDamageCheck(EntityDamageEvent event)
@@ -67,7 +67,7 @@ public class DeathListener extends BadListener {
 		{
 			return;
 		}
-		
+
 		if (event.getCause().equals(DamageCause.SUFFOCATION) || event.getCause().equals(DamageCause.FALLING_BLOCK)
 				|| event.getCause().equals(DamageCause.CONTACT))
 		{
@@ -75,12 +75,12 @@ public class DeathListener extends BadListener {
 			return;
 		}
 	}
-	
+
 	private void work(EntityDamageByEntityEvent event)
 	{
-		
+
 		BadblockPlayer damager = null;
-		
+
 		if (!event.getDamager().getType().equals(EntityType.PLAYER))
 		{
 			ProjectileSource entity = null;
@@ -88,12 +88,12 @@ public class DeathListener extends BadListener {
 			{
 				entity = ((Projectile) event.getDamager()).getShooter();
 			}
-			
+
 			if (entity == null || !(entity instanceof Player))
 			{
 				return;
 			}
-			
+
 			damager = (BadblockPlayer) entity;
 		}
 		else
@@ -102,7 +102,7 @@ public class DeathListener extends BadListener {
 		}
 
 		BadblockPlayer damaged = (BadblockPlayer) event.getEntity();
-		
+
 		if (damager.getTeam() != null && damaged.getTeam() != null && damager.getTeam().equals(damaged.getTeam()))
 		{
 			event.setCancelled(true);
@@ -263,10 +263,16 @@ public class DeathListener extends BadListener {
 				data.lastKills.put(player.getName(), System.currentTimeMillis() + 120000);
 			}
 
-			bKiller.getCustomObjective().generate();
+			if (bKiller.getCustomObjective() != null)
+			{
+				bKiller.getCustomObjective().generate();
+			}
 		}
 
-		player.getCustomObjective().generate();
+		if (player.getCustomObjective() != null)
+		{
+			player.getCustomObjective().generate();
+		}
 		e.setRespawnPlace(respawnPlace);
 	}
 

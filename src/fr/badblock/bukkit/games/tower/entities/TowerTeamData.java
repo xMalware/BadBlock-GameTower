@@ -2,6 +2,7 @@ package fr.badblock.bukkit.games.tower.entities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import fr.badblock.bukkit.games.tower.PluginTower;
@@ -82,7 +83,17 @@ public class TowerTeamData implements TeamData {
 			if(bPlayer.getCustomObjective() != null)
 				bPlayer.getCustomObjective().generate();
 
-			bPlayer.sendTranslatedMessage("tower.mark-title", marks, player.getName(), player.getTeam().getChatName());
+			bPlayer.sendTranslatedMessage("tower.mark-title", marks, PluginTower.getInstance().getConfiguration().neededPoints, player.getName(), player.getTeam().getChatName());
+			if (player.getTeam() != null && player.getTeam().equals(bPlayer.getTeam()))
+			{
+				bPlayer.playSound(Sound.FUSE);
+			}
+			else
+			{
+				bPlayer.playSound(Sound.BLAZE_DEATH);
+			}
+			bPlayer.sendTitle(" ", player.getTranslatedMessage("tower.mark-subtitle", marks, PluginTower.getInstance().getConfiguration().neededPoints, player.getName(), player.getTeam().getChatName())[0]);
+
 			bPlayer.sendTimings(10, 40, 10);
 		}
 	}
